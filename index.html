@@ -354,49 +354,9 @@
   </div>
   <div class="micro-note" style="text-align:center;margin-top:10px;">継続日数は「総合70点以上 かつ 健康コア(食事+筋トレ+睡眠)35/50以上」の日でカウント。英語だけ頑張っても継続にはなりません。週1回だけ失敗しても継続は途切れない猶予付き。</div>
 
-<div class="cat" id="cat-health" style="margin-top:22px;border-color:var(--gold);">
-    <div class="cat-head"><div class="cat-title" style="color:var(--gold);">健康指標(結果)</div></div>
-    <div class="micro-note" style="margin-bottom:10px;">スコアには影響しません。行動(食事/筋トレなど)が実際に数値を動かせているか確認するための記録です。上の日付ナビで日付を選んでから記録してください。</div>
-
-    <div style="font-size:12.5px;font-weight:700;margin-bottom:6px;">体重(週1目安)</div>
-    <div class="stepper health-stepper" data-hfield="weight" data-step="0.5" data-min="30" data-max="200">
-      <button data-d="-1">−</button><div class="val"><span class="v">70</span><span class="unit"> kg</span></div><button data-d="1">+</button>
-    </div>
-    <button class="chip" id="healthWeightBtn" type="button" style="margin-top:8px;background:var(--gold);border-color:var(--gold);color:var(--ink);font-weight:700;">体重を記録</button>
-    <div class="micro-note" id="healthWeightStatus" style="margin-top:6px;"></div>
-
-    <div style="font-size:12.5px;font-weight:700;margin:18px 0 6px;border-top:1px solid var(--line-soft);padding-top:14px;">血液検査(不定期・採血のたびに)</div>
-    <div class="row2">
-      <div class="stepper health-stepper" data-hfield="ast" data-step="1" data-min="0" data-max="300">
-        <button data-d="-1">−</button><div class="val"><span class="v">20</span><span class="unit"> AST</span></div><button data-d="1">+</button>
-      </div>
-      <div class="stepper health-stepper" data-hfield="alt" data-step="1" data-min="0" data-max="300">
-        <button data-d="-1">−</button><div class="val"><span class="v">20</span><span class="unit"> ALT</span></div><button data-d="1">+</button>
-      </div>
-    </div>
-    <div class="row2" style="margin-top:8px;">
-      <div class="stepper health-stepper" data-hfield="ggt" data-step="1" data-min="0" data-max="300">
-        <button data-d="-1">−</button><div class="val"><span class="v">20</span><span class="unit"> γ-GTP</span></div><button data-d="1">+</button>
-      </div>
-      <div class="stepper health-stepper" data-hfield="ldl" data-step="1" data-min="0" data-max="300">
-        <button data-d="-1">−</button><div class="val"><span class="v">100</span><span class="unit"> LDL</span></div><button data-d="1">+</button>
-      </div>
-    </div>
-    <div class="stepper health-stepper" data-hfield="hba1c" data-step="0.1" data-min="3" data-max="15" style="margin-top:8px;">
-      <button data-d="-1">−</button><div class="val"><span class="v">5.5</span><span class="unit"> HbA1c%</span></div><button data-d="1">+</button>
-    </div>
-    <button class="chip" id="healthLabsBtn" type="button" style="margin-top:8px;background:var(--gold);border-color:var(--gold);color:var(--ink);font-weight:700;">血液検査を記録</button>
-    <div class="micro-note" id="healthLabsStatus" style="margin-top:6px;"></div>
-
-    <div style="margin-top:14px;border-top:1px solid var(--line-soft);padding-top:10px;">
-      <div style="font-size:11.5px;color:var(--muted);margin-bottom:6px;">直近の記録</div>
-      <div id="healthHistory" style="font-family:'JetBrains Mono', monospace;font-size:11px;line-height:1.9;color:var(--paper);">読み込み中...</div>
-    </div>
-  </div>
-
   <div class="cat" id="cat-backup" style="margin-top:9px;border-color:var(--line);">
     <div class="cat-head"><div class="cat-title">バックアップ</div></div>
-    <div class="micro-note" style="margin-bottom:10px;">直近120日分の記録+健康指標をまとめて書き出します。何かあった時のために、たまにコピーして手元に保存しておいてください。</div>
+    <div class="micro-note" style="margin-bottom:10px;">直近120日分の記録をまとめて書き出します。何かあった時のために、たまにコピーして手元に保存しておいてください。</div>
     <button class="chip" id="backupBtn" type="button">バックアップを作成</button>
     <div id="backupStatus" class="micro-note" style="margin-top:8px;"></div>
     <textarea id="backupOutput" readonly style="display:none;width:100%;height:140px;margin-top:10px;background:var(--panel-2);color:var(--paper);border:1px solid var(--line-soft);border-radius:4px;font-family:'JetBrains Mono', monospace;font-size:10px;padding:8px;"></textarea>
@@ -744,104 +704,6 @@ document.getElementById('snackAddBtn').addEventListener('click', ()=>{
   scheduleSave();
 });
 
-// --- 健康指標(体重・血液検査): スコアとは無関係の別トラック ---
-const healthInputs = {weight:70, ast:20, alt:20, ggt:20, ldl:100, hba1c:5.5};
-
-function renderHealthInputs(){
-  document.querySelectorAll('.health-stepper').forEach(el=>{
-    const f = el.dataset.hfield;
-    const v = el.querySelector('.v');
-    if(v) v.textContent = healthInputs[f];
-  });
-}
-function bindHealthStepper(el){
-  const field = el.dataset.hfield;
-  const step = parseFloat(el.dataset.step);
-  const min = parseFloat(el.dataset.min);
-  const max = parseFloat(el.dataset.max);
-  el.querySelectorAll('button').forEach(btn=>{
-    btn.addEventListener('click', ()=>{
-      const dir = parseInt(btn.dataset.d);
-      let val = (healthInputs[field]||0) + dir*step;
-      val = Math.round(val*100)/100;
-      val = Math.max(min, Math.min(max, val));
-      healthInputs[field]=val;
-      renderHealthInputs();
-    });
-  });
-}
-document.querySelectorAll('.health-stepper').forEach(bindHealthStepper);
-renderHealthInputs();
-
-async function loadHealthLog(){
-  try{
-    const r = localStorage.getItem('healthlog');
-    return r ? JSON.parse(r) : [];
-  }catch(e){
-    return [];
-  }
-}
-async function saveHealthLog(log){
-  try{
-    localStorage.setItem('healthlog', JSON.stringify(log));
-    return true;
-  }catch(e){
-    console.error(e);
-    return false;
-  }
-}
-function upsertHealthEntry(log, dateStr, fields){
-  const idx = log.findIndex(e=>e.date===dateStr);
-  if(idx>=0){
-    log[idx] = {...log[idx], ...fields};
-  } else {
-    log.push({date:dateStr, ...fields});
-  }
-  log.sort((a,b)=> a.date<b.date ? -1 : 1);
-  return log;
-}
-
-document.getElementById('healthWeightBtn').addEventListener('click', async ()=>{
-  const statusEl = document.getElementById('healthWeightStatus');
-  statusEl.textContent='記録中...';
-  const log = await loadHealthLog();
-  const updated = upsertHealthEntry(log, fmtDate(current), {weight:healthInputs.weight});
-  const ok = await saveHealthLog(updated);
-  statusEl.textContent = ok ? `${fmtDate(current)} に体重 ${healthInputs.weight}kg を記録しました` : '保存に失敗しました。もう一度お試しください';
-  renderHealthHistory();
-});
-
-document.getElementById('healthLabsBtn').addEventListener('click', async ()=>{
-  const statusEl = document.getElementById('healthLabsStatus');
-  statusEl.textContent='記録中...';
-  const log = await loadHealthLog();
-  const updated = upsertHealthEntry(log, fmtDate(current), {
-    ast:healthInputs.ast, alt:healthInputs.alt, ggt:healthInputs.ggt,
-    ldl:healthInputs.ldl, hba1c:healthInputs.hba1c
-  });
-  const ok = await saveHealthLog(updated);
-  statusEl.textContent = ok ? `${fmtDate(current)} に血液検査を記録しました` : '保存に失敗しました。もう一度お試しください';
-  renderHealthHistory();
-});
-
-async function renderHealthHistory(){
-  const el = document.getElementById('healthHistory');
-  const log = await loadHealthLog();
-  if(log.length===0){ el.textContent='まだ記録がありません'; return; }
-  const recent = [...log].sort((a,b)=> a.date<b.date?1:-1).slice(0,8);
-  el.innerHTML = recent.map(e=>{
-    const parts=[];
-    if(e.weight!==undefined) parts.push(`体重${e.weight}kg`);
-    if(e.ast!==undefined) parts.push(`AST${e.ast}`);
-    if(e.alt!==undefined) parts.push(`ALT${e.alt}`);
-    if(e.ggt!==undefined) parts.push(`γGTP${e.ggt}`);
-    if(e.ldl!==undefined) parts.push(`LDL${e.ldl}`);
-    if(e.hba1c!==undefined) parts.push(`HbA1c${e.hba1c}`);
-    return `${e.date}: ${parts.join(' / ')}`;
-  }).join('<br>');
-}
-renderHealthHistory();
-
 // --- バックアップ ---
 document.getElementById('backupBtn').addEventListener('click', async ()=>{
   const statusEl = document.getElementById('backupStatus');
@@ -860,17 +722,15 @@ document.getElementById('backupBtn').addEventListener('click', async ()=>{
       return r ? {date:d, ...JSON.parse(r)} : null;
     }catch(e){ return null; }
   }));
-  const healthlog = await loadHealthLog();
   const backup = {
     exportedAt: new Date().toISOString(),
-    dailyRecords: dayRecords.filter(Boolean),
-    healthlog
+    dailyRecords: dayRecords.filter(Boolean)
   };
   const text = JSON.stringify(backup, null, 2);
   output.value = text;
   output.style.display='block';
   copyBtn.style.display='inline-block';
-  statusEl.textContent = `${backup.dailyRecords.length}日分の記録+健康指標${healthlog.length}件を書き出しました。下のテキストを保存するか、コピーしてメモアプリなどに貼り付けてください。`;
+  statusEl.textContent = `${backup.dailyRecords.length}日分の記録を書き出しました。下のテキストを保存するか、コピーしてメモアプリなどに貼り付けてください。`;
 
   try{
     const blob = new Blob([text], {type:'application/json'});
@@ -943,17 +803,30 @@ function pomoRenderTime(){
   const phase = POMO_PHASES[pomoPhaseIdx];
   pomoPhaseLabelEl.textContent = phase.label + (pomoRunning ? ' — 進行中' : (pomoRemaining===phase.seconds ? ' — スタート待ち' : ' — 一時停止中'));
 }
+let pomoAudioCtx = null;
 function pomoBeep(){
   try{
-    const ctx = new (window.AudioContext||window.webkitAudioContext)();
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.frequency.value = 880;
-    osc.connect(gain); gain.connect(ctx.destination);
-    gain.gain.setValueAtTime(0.15, ctx.currentTime);
-    osc.start();
-    osc.stop(ctx.currentTime+0.3);
-  }catch(e){}
+    if(!pomoAudioCtx){
+      pomoAudioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    }
+    if(pomoAudioCtx.state === 'suspended'){
+      pomoAudioCtx.resume();
+    }
+    const playTone = (freq, startOffset)=>{
+      const osc = pomoAudioCtx.createOscillator();
+      const gain = pomoAudioCtx.createGain();
+      osc.frequency.value = freq;
+      osc.connect(gain); gain.connect(pomoAudioCtx.destination);
+      const t0 = pomoAudioCtx.currentTime + startOffset;
+      gain.gain.setValueAtTime(0.0001, t0);
+      gain.gain.exponentialRampToValueAtTime(0.2, t0+0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, t0+0.5);
+      osc.start(t0);
+      osc.stop(t0+0.55);
+    };
+    playTone(880, 0);      // 1回目
+    playTone(1046, 0.35);  // 2回目(少し高い音で区切りをはっきりさせる)
+  }catch(e){ console.error('beep failed', e); }
   if(navigator.vibrate) navigator.vibrate([200,80,200]);
 }
 function pomoTick(){
@@ -982,6 +855,14 @@ function pomoTick(){
   }
 }
 pomoStartBtn.addEventListener('click', ()=>{
+  try{
+    if(!pomoAudioCtx){
+      pomoAudioCtx = new (window.AudioContext||window.webkitAudioContext)();
+    }
+    if(pomoAudioCtx.state === 'suspended'){
+      pomoAudioCtx.resume();
+    }
+  }catch(e){}
   if(pomoRunning){
     pomoRunning = false;
     clearInterval(pomoInterval);
