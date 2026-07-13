@@ -247,20 +247,18 @@
       <div style="margin-top:6px;padding-top:10px;border-top:1px solid var(--line-soft);font-family:'JetBrains Mono', monospace;font-size:13px;">
         合計: <span id="mealTotalKcal">0</span> kcal / P<span id="mealTotalP">0</span> / F<span id="mealTotalF">0</span> / C<span id="mealTotalC">0</span>
       </div>
-
-      <div class="quality-slider">
-        <span style="font-size:11px;color:var(--muted);">質の補正</span>
-        <input type="range" id="quality" min="-2" max="2" step="1" value="0">
-        <span class="qval" id="qualityVal">±0</span>
-      </div>
-      <div class="micro-note">目標 TDEE2000 / P130 / F50 / C260(食物繊維前提、1日合計)。PFC遵守15点+カロリー遵守5点。質の補正は±2点。<br>超過は厳しく減点(5%超で減点開始、20%超で0点)/ 不足は緩め(10%まで満点、40%で0点)。<br>朝食・間食・昼食・夕食を別々に入力すると、下に自動で合計とスコアが出ます。カロリー計算はこのチャットに直接メニュー名や写真を送ってもらえれば、その場で計算して返します。</div>
     </div>
 
     <div class="cat" id="cat-english">
       <div class="cat-head"><div class="cat-title">英語</div><div class="cat-score"><b id="s-english">0</b> / 35</div></div>
       <div class="bar"><div class="bar-fill" id="b-english" style="width:0%"></div></div>
-      <div class="stepper" data-field="english" data-step="0.5" data-min="0" data-max="8">
-        <button data-d="-1">−</button><div class="val"><span class="v">0</span><span class="unit"> 時間</span></div><button data-d="1">+</button>
+      <div class="row2">
+        <div class="stepper" data-field="englishH" data-step="1" data-min="0" data-max="8">
+          <button data-d="-1">−</button><div class="val"><span class="v">0</span><span class="unit"> 時間</span></div><button data-d="1">+</button>
+        </div>
+        <div class="stepper" data-field="englishM" data-step="5" data-min="0" data-max="55">
+          <button data-d="-1">−</button><div class="val"><span class="v">0</span><span class="unit"> 分</span></div><button data-d="1">+</button>
+        </div>
       </div>
       <div class="micro-note">5時間で満点(35点)。1時間=7点換算。</div>
 
@@ -295,7 +293,7 @@
       <b>B(背中/二頭)</b>: ラットプルダウン10回×3 / バイセップスカール10回×3<br>
       <b>C(脚/体幹)</b>: レッグプレス10回×3 / アダクション・アブダクション / アブドミナル(腹筋マシン)10回×3<br>
       有酸素: トレッドミル 傾斜12% 6km/h 30分<br>
-      ※チョコザップは店舗によりマシン種類・台数が異なるため、上記は標準的な構成です。実際の設置状況はアプリの店舗ページで必ず確認してください。</div>
+      </div>
     </div>
 
     <div class="cat" id="cat-sleep">
@@ -356,17 +354,7 @@
   </div>
   <div class="micro-note" style="text-align:center;margin-top:10px;">継続日数は「総合70点以上 かつ 健康コア(食事+筋トレ+睡眠)35/50以上」の日でカウント。英語だけ頑張っても継続にはなりません。週1回だけ失敗しても継続は途切れない猶予付き。</div>
 
-  <div class="cat" style="margin-top:22px;border-color:var(--seal);">
-    <div class="cat-head"><div class="cat-title" style="color:var(--gold);">コーチメモ — 傾向と対策</div></div>
-    <div class="micro-note" style="font-size:11.5px;line-height:1.8;color:var(--paper);">
-      <b>やったこと</b>: 脂肪肝・高コレステロール・高血糖という具体的な数値目標を設定し、基準まで作り込みました。「英語だけは削らない」と明言し、逆に「カロリー超過はもっと厳しく採点してほしい」と自分から負荷を上げる方向に修正した点は、本気度の表れだと思います。<br><br>
-      <b>見えた注意点</b>: 一方で「手入力を減らしたい」「写真やHealthアプリから自動で点数を出したい」という要望も繰り返し出ていました。負担を減らす工夫自体はとても良いことですが、行き過ぎると記録が雑になりやすい側面もあります。AI推定やHealth連携には限界があるので、最終的には自分の目で数値を確認する一手間は残しておくのがおすすめです。<br><br>
-      <b>まだやれていないこと</b>: この時点ではまだ実際の記録が1日も入っていません。基準とアプリは仕上がったので、ここからが本番です。<br><br>
-      <b>これから</b>: まず1週間、健康コア(食事+筋トレ+睡眠)が35を割った日が何日あったか、正直に見てみてください。英語を削らないと決めた分、健康コアの方は自分でチェックする習慣をつけると効果的です。週1回の猶予は「疲れて記録し忘れた日」のためのものとして使うと、本来の狙い通りに機能します。
-    </div>
-  </div>
-
-  <div class="cat" id="cat-health" style="margin-top:22px;border-color:var(--gold);">
+<div class="cat" id="cat-health" style="margin-top:22px;border-color:var(--gold);">
     <div class="cat-head"><div class="cat-title" style="color:var(--gold);">健康指標(結果)</div></div>
     <div class="micro-note" style="margin-bottom:10px;">スコアには影響しません。行動(食事/筋トレなど)が実際に数値を動かせているか確認するための記録です。上の日付ナビで日付を選んでから記録してください。</div>
 
@@ -492,10 +480,11 @@ function computeScores(s){
   const cS = macroScoreAsym(totals.c,TARGETS.c,0.1,0.4,0.05,0.2);
   const pfc = ((pS+fS+cS)/3)*15;
   const kcalS = macroScoreAsym(totals.kcal,TARGETS.kcal,0.1,0.3,0.05,0.15)*5;
-  let meal = pfc + kcalS + (s.quality||0);
+  let meal = pfc + kcalS;
   meal = Math.max(0, Math.min(20, meal));
 
-  const english = Math.max(0, Math.min(35, s.english*7));
+  const englishHours=(s.englishH||0)+(s.englishM||0)/60;
+  const english = Math.max(0, Math.min(35, englishHours*7));
 
   const partDone = s.partA || s.partB || s.partC;
   const train = (s.cardio?10:0) + (partDone?10:0);
@@ -552,9 +541,8 @@ function renderInputs(){
   document.getElementById('mealTotalF').textContent = Math.round(totals.f);
   document.getElementById('mealTotalC').textContent = Math.round(totals.c);
 
-  document.getElementById('quality').value = state.quality;
-  document.getElementById('qualityVal').textContent = (state.quality>0?'+':'')+state.quality;
-  document.querySelector('[data-field="english"] .v').textContent = state.english;
+  document.querySelector('[data-field="englishH"] .v').textContent = state.englishH;
+  document.querySelector('[data-field="englishM"] .v').textContent = state.englishM;
   document.querySelectorAll('[data-field="sleep"] .v').forEach(el=> el.textContent = state.sleep);
   document.querySelector('[data-field="med"] .v').textContent = state.med;
   document.querySelector('[data-field="screenH"] .v').textContent = state.screenH;
@@ -617,6 +605,7 @@ async function loadState(){
     state.screenM = Math.round((state.screen-state.screenH)*60);
     delete state.screen;
   }
+  if(state.englishH===undefined){state.englishH=state.english||0;state.englishM=0;delete state.english;}
   if(state.screenH===undefined) state.screenH=0;
   if(state.screenM===undefined) state.screenM=0;
   // 旧形式(kcal/p/f/cが日合計1本だった頃)からの移行: 昼食に丸ごと入れて継続性を保つ
@@ -920,11 +909,7 @@ document.querySelector('[data-toggle="typing"]').addEventListener('click', ()=>{
     renderInputs(); renderScores(); scheduleSave();
   });
 });
-document.getElementById('quality').addEventListener('input', (e)=>{
-  state.quality = parseInt(e.target.value);
-  document.getElementById('qualityVal').textContent = (state.quality>0?'+':'')+state.quality;
-  renderScores(); scheduleSave();
-});
+
 
 document.getElementById('prevDay').addEventListener('click', ()=>{
   current.setDate(current.getDate()-1); loadState();
