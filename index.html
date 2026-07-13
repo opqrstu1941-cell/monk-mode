@@ -247,6 +247,7 @@
       <div style="margin-top:6px;padding-top:10px;border-top:1px solid var(--line-soft);font-family:'JetBrains Mono', monospace;font-size:13px;">
         合計: <span id="mealTotalKcal">0</span> kcal / P<span id="mealTotalP">0</span> / F<span id="mealTotalF">0</span> / C<span id="mealTotalC">0</span>
       </div>
+      <div class="micro-note" style="margin-top:8px;">1日の基準: TDEE 2000kcal / P 130g / F 50g / C 260g。超過は5%超で減点開始・20%超で0点(厳格)、不足は10%まで満点・40%不足で0点(緩やか)。</div>
     </div>
 
     <div class="cat" id="cat-english">
@@ -389,8 +390,7 @@ function defaultState(){
   return {
     meals: {breakfast:emptyMeal(), lunch:emptyMeal(), dinner:emptyMeal()},
     snacks: [], // 間食は複数回追加できるので配列(食べない日は空のまま)
-    quality:0,
-    english:0,
+    englishH:0, englishM:0,
     cardio:false, partA:false, partB:false, partC:false,
     sleep:0, med:0,
     journal:false, typing:false,
@@ -540,9 +540,9 @@ async function saveState(){
     }
   }
   if(ok){
-    document.getElementById('saveState').textContent='保存済み '+new Date().toLocaleTimeString('ja-JP');
+    document.getElementById('saveState').textContent='保存済み(この端末に保存) '+new Date().toLocaleTimeString('ja-JP');
   } else {
-    document.getElementById('saveState').textContent='⚠ クラウド保存失敗(この画面を開いている間は一時保持されています。閉じる前にもう一度お試しください)';
+    document.getElementById('saveState').textContent='⚠ 保存失敗(この画面を開いている間は一時保持されています。ブラウザのプライベートモードだと保存できないことがあります)';
   }
   renderHeatmap();
 }
@@ -688,6 +688,7 @@ function renderSnacks(){
     removeBtn.textContent = '×';
     removeBtn.style.cssText = 'padding:6px 12px;';
     removeBtn.addEventListener('click', ()=>{
+      if(!confirm('この間食の記録を削除しますか？元に戻せません。')) return;
       state.snacks.splice(idx,1);
       renderSnacks();
       renderScores();
@@ -841,7 +842,9 @@ function pomoTick(){
       // 1セット完了(25+5+25) → 実質学習50分を英語時間に加算
       clearInterval(pomoInterval);
       pomoRunning = false;
-      state.english = Math.round(((state.english||0) + 50/60)*100)/100;
+      const addedMinutes = (state.englishH||0)*60 + (state.englishM||0) + 50;
+      state.englishH = Math.floor(addedMinutes/60);
+      state.englishM = addedMinutes%60;
       renderInputs(); renderScores(); scheduleSave();
       pomoPhaseIdx = 0;
       pomoRemaining = POMO_PHASES[0].seconds;
