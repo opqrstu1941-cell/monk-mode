@@ -247,18 +247,11 @@
       <div style="margin-top:6px;padding-top:10px;border-top:1px solid var(--line-soft);font-family:'JetBrains Mono', monospace;font-size:13px;">
         合計: <span id="mealTotalKcal">0</span> kcal / P<span id="mealTotalP">0</span> / F<span id="mealTotalF">0</span> / C<span id="mealTotalC">0</span>
       </div>
-      <div class="micro-note">目標 TDEE2000 / P130 / F50 / C260(食物繊維前提、1日合計)。PFC遵守15点+カロリー遵守5点。超過は厳しく減点(5%超で減点開始、20%超で0点)/ 不足は緩め(10%まで満点、40%で0点)。朝食・間食・昼食・夕食を別々に入力すると、下に自動で合計とスコアが出ます。カロリー計算はこのチャットに直接メニュー名や写真を送ってもらえれば、その場で計算して返します。</div>
-    </div>
 
-    <div class="cat" id="cat-english">
+      <div class="cat" id="cat-english">
       <div class="cat-head"><div class="cat-title">英語</div><div class="cat-score"><b id="s-english">0</b> / 35</div></div>
       <div class="bar"><div class="bar-fill" id="b-english" style="width:0%"></div></div>
-      <div class="stepper" data-field="englishH" data-step="1" data-min="0" data-max="8">
-        <button data-d="-1">−</button><div class="val"><span class="v">0</span><span class="unit"> 時間</span></div><button data-d="1">+</button>
-      </div>
-      <div class="stepper" data-field="englishM" data-step="5" data-min="0" data-max="55" style="margin-top:6px;">
-        <button data-d="-1">−</button><div class="val"><span class="v">0</span><span class="unit"> 分</span></div><button data-d="1">+</button>
-      </div>
+      <div class="row2"><div class="stepper" data-field="englishH" data-step="1" data-min="0" data-max="8"><button data-d="-1">−</button><div class="val"><span class="v">0</span><span class="unit"> 時間</span></div><button data-d="1">+</button></div><div class="stepper" data-field="englishM" data-step="5" data-min="0" data-max="55"><button data-d="-1">−</button><div class="val"><span class="v">0</span><span class="unit"> 分</span></div><button data-d="1">+</button></div></div>
       <div class="micro-note">5時間で満点(35点)。1時間=7点換算。</div>
 
       <div class="pomo" style="margin-top:12px;border-top:1px solid var(--line-soft);padding-top:12px;">
@@ -428,8 +421,9 @@ function defaultState(){
   return {
     meals: {breakfast:emptyMeal(), lunch:emptyMeal(), dinner:emptyMeal()},
     snacks: [], // 間食は複数回追加できるので配列(食べない日は空のまま)
-    quality:0,
-    englishH:0, englishM:0,
+    
+    englishH:0,
+    englishM:0,
     cardio:false, partA:false, partB:false, partC:false,
     sleep:0, med:0,
     journal:false, typing:false,
@@ -479,11 +473,11 @@ function computeScores(s){
   const cS = macroScoreAsym(totals.c,TARGETS.c,0.1,0.4,0.05,0.2);
   const pfc = ((pS+fS+cS)/3)*15;
   const kcalS = macroScoreAsym(totals.kcal,TARGETS.kcal,0.1,0.3,0.05,0.15)*5;
-  let meal = pfc + kcalS + (s.quality||0);
+  let meal = pfc + kcalS;
   meal = Math.max(0, Math.min(20, meal));
 
-  const english=((s.englishH||0)+((s.englishM||0)/60));
-  const englishScore=Math.max(0,Math.min(35,english*7));
+  const englishHours=(s.englishH||0)+(s.englishM||0)/60;
+  const english=Math.max(0,Math.min(35,englishHours*7));
 
   const partDone = s.partA || s.partB || s.partC;
   const train = (s.cardio?10:0) + (partDone?10:0);
@@ -496,7 +490,7 @@ function computeScores(s){
 
   const total = Math.max(0, meal+english+train+sleep+med+misc+screen);
   const healthCore = meal+train+sleep; // /50点。英語を含まない健康の核
-  return {meal,english:englishScore,train,sleep,med,misc,screen,total,healthCore};
+  return {meal,english,train,sleep,med,misc,screen,total,healthCore};
 }
 
 function renderScores(){
