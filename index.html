@@ -1,0 +1,1108 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>修行録 — MONK MODE</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink: #4a4a49;
+    --paper: #f2f1ee;
+    --panel: #5a5a58;
+    --panel-2: #656462;
+    --line: #85837f;
+    --line-soft: #6f6d6a;
+    --seal: #b4483d;
+    --seal-dim: #7d332b;
+    --gold: #d4ad55;
+    --muted: #c4c2bd;
+    --good: #7d9668;
+    --bad: #a24d3f;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse at top, #5c5c5a 0%, var(--ink) 55%);
+    color: var(--paper);
+    font-family:'Zen Kaku Gothic New', sans-serif;
+    min-height:100vh;
+    padding: 20px 14px 60px;
+  }
+  .wrap{max-width:520px;margin:0 auto;}
+
+  /* header */
+  .eyebrow{
+    font-family:'JetBrains Mono', monospace;
+    font-size:11px;
+    letter-spacing:.18em;
+    color: var(--muted);
+    text-align:center;
+    margin-bottom:4px;
+  }
+  h1{
+    font-family:'Shippori Mincho', serif;
+    font-weight:800;
+    font-size:26px;
+    text-align:center;
+    margin: 0 0 2px;
+    letter-spacing:.06em;
+    color: var(--paper);
+  }
+  .mission{
+    text-align:center;
+    font-size:11.5px;
+    color: var(--muted);
+    margin-bottom: 18px;
+    line-height:1.6;
+  }
+
+  /* date nav */
+  .datenav{
+    display:flex;align-items:center;justify-content:center;gap:14px;
+    margin-bottom:22px;
+  }
+  .datenav button{
+    background:none;border:1px solid var(--line);color:var(--paper);
+    width:32px;height:32px;border-radius:50%;font-size:14px;cursor:pointer;
+  }
+  .datenav button:active{background:var(--panel-2);}
+  .datelabel{
+    font-family:'JetBrains Mono', monospace;
+    font-size:14px;letter-spacing:.04em;min-width:150px;text-align:center;
+  }
+  .datelabel .dow{color:var(--muted);font-size:11px;margin-left:6px;}
+
+  /* seal / hero */
+  .seal-wrap{display:flex;flex-direction:column;align-items:center;margin-bottom:26px;}
+  .seal{
+    width:168px;height:168px;border-radius:50%;
+    border:3px solid var(--seal);
+    display:flex;flex-direction:column;align-items:center;justify-content:center;
+    position:relative;
+    background: radial-gradient(circle at 35% 30%, #656462 0%, #444341 70%);
+    box-shadow: 0 0 0 5px rgba(183,57,44,0.07), inset 0 0 30px rgba(183,57,44,0.08);
+    transition: box-shadow .4s ease, border-color .4s ease;
+  }
+  .seal .score{
+    font-family:'Shippori Mincho', serif;
+    font-weight:800;
+    font-size:56px;
+    line-height:1;
+    color: var(--paper);
+  }
+  .seal .max{
+    font-family:'JetBrains Mono', monospace;
+    font-size:12px;color:var(--muted);margin-top:2px;letter-spacing:.1em;
+  }
+  .seal.high{border-color:var(--gold); box-shadow:0 0 0 5px rgba(201,162,74,0.12), inset 0 0 30px rgba(201,162,74,0.15);}
+  .streak{
+    margin-top:12px;font-family:'JetBrains Mono', monospace;font-size:12px;
+    color:var(--gold); letter-spacing:.08em;
+  }
+
+  /* ledger */
+  .ledger{margin-bottom:26px;}
+  .cat{
+    background:var(--panel);
+    border:1px solid var(--line-soft);
+    border-radius:4px;
+    padding:14px 15px;
+    margin-bottom:9px;
+  }
+  .cat-head{
+    display:flex;justify-content:space-between;align-items:baseline;margin-bottom:10px;
+  }
+  .cat-title{font-size:14px;font-weight:700;letter-spacing:.02em;}
+  .cat-score{
+    font-family:'JetBrains Mono', monospace;font-size:13px;color:var(--muted);
+  }
+  .cat-score b{color:var(--paper);font-size:15px;}
+  .bar{height:3px;background:var(--line-soft);border-radius:2px;overflow:hidden;margin-bottom:12px;}
+  .bar-fill{height:100%;background:var(--seal);transition:width .3s ease, background .3s ease;}
+
+  .stepper{display:flex;align-items:center;gap:10px;}
+  .stepper button{
+    width:30px;height:30px;border-radius:50%;border:1px solid var(--line);
+    background:var(--panel-2);color:var(--paper);font-size:15px;cursor:pointer;
+  }
+  .stepper button:active{background:var(--seal-dim);}
+  .stepper .val{
+    font-family:'JetBrains Mono', monospace;font-size:15px;min-width:56px;text-align:center;
+  }
+  .stepper .unit{font-size:11px;color:var(--muted);margin-left:-4px;}
+
+  .row2{display:flex;gap:10px;flex-wrap:wrap;}
+  .row2 .stepper{flex:1;min-width:130px;}
+
+  .toggle-grid{display:flex;gap:8px;flex-wrap:wrap;}
+  .chip{
+    padding:8px 14px;border-radius:20px;border:1px solid var(--line);
+    font-size:12.5px;cursor:pointer;background:none;color:var(--muted);
+    font-family:'Zen Kaku Gothic New', sans-serif;
+  }
+  .chip.on{background:var(--seal);border-color:var(--seal);color:var(--paper);font-weight:700;}
+
+  .micro-note{font-size:10.5px;color:var(--muted);margin-top:8px;line-height:1.5;}
+
+  .quality-slider{display:flex;align-items:center;gap:8px;margin-top:10px;}
+  .quality-slider input{flex:1;}
+  .quality-slider .qval{font-family:'JetBrains Mono', monospace;font-size:12px;min-width:34px;text-align:right;}
+
+  .meal-field{display:flex;flex-direction:column;align-items:center;background:var(--panel-2);border-radius:6px;padding:6px 8px;min-width:60px;flex:1;}
+  .meal-field .mf-input{width:100%;text-align:center;background:none;border:none;color:var(--paper);font-family:'JetBrains Mono', monospace;font-size:14px;}
+  .meal-field .mf-unit{font-size:9.5px;color:var(--muted);margin-top:2px;}
+
+  /* heatmap */
+  .heat-title{
+    font-size:12px;letter-spacing:.1em;color:var(--muted);margin:22px 0 10px;
+    font-family:'JetBrains Mono', monospace;
+  }
+  .heatgrid{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;}
+  .cell{
+    aspect-ratio:1;border-radius:3px;border:1px solid var(--line-soft);
+    cursor:pointer;position:relative;
+    display:flex;align-items:center;justify-content:center;
+    font-family:'JetBrains Mono', monospace;
+    font-size:10px;
+    color:var(--paper);
+    text-shadow:0 1px 2px rgba(0,0,0,0.7);
+  }
+  .cell.today{outline:1px solid var(--gold);outline-offset:1px;}
+  .legend{display:flex;align-items:center;gap:6px;margin-top:10px;justify-content:flex-end;font-size:10px;color:var(--muted);font-family:'JetBrains Mono', monospace;}
+  .legend .sq{width:9px;height:9px;border-radius:2px;border:1px solid var(--line-soft);}
+
+  .footer-note{
+    text-align:center;font-size:10.5px;color:var(--line);margin-top:26px;
+    font-family:'JetBrains Mono', monospace;letter-spacing:.05em;
+  }
+
+  ::selection{background:var(--seal);color:var(--paper);}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">脂肪肝 ・ 高コレステロール ・ 高血糖 撃破</div>
+  <h1>修行録 MONK MODE</h1>
+  <div class="mission">今日という一日を、言い訳なく記録する。</div>
+
+  <div class="datenav">
+    <button id="prevDay">‹</button>
+    <div class="datelabel"><span id="dateLabel">--</span><span class="dow" id="dowLabel"></span></div>
+    <button id="nextDay">›</button>
+  </div>
+
+  <div class="seal-wrap">
+    <div class="seal" id="seal">
+      <div class="score" id="scoreVal">0</div>
+      <div class="max">/ 100</div>
+    </div>
+    <div class="streak" id="streakLabel">継続 0日</div>
+    <div class="streak" id="healthCoreLabel" style="color:var(--muted);font-size:11px;margin-top:2px;">健康コア 0 / 50</div>
+  </div>
+
+  <div class="ledger">
+
+    <div class="cat" id="cat-meal">
+      <div class="cat-head"><div class="cat-title">食事管理</div><div class="cat-score"><b id="s-meal">0</b> / 20</div></div>
+      <div class="bar"><div class="bar-fill" id="b-meal" style="width:0%"></div></div>
+
+      <div id="mealBreakdown">
+        <div class="meal-sub" data-meal="breakfast" style="margin-bottom:12px;">
+          <div style="font-size:12.5px;font-weight:700;margin-bottom:6px;color:var(--gold);">朝食</div>
+          <div class="meal-sub-row" style="display:flex;gap:8px;flex-wrap:wrap;">
+            <div class="meal-field"><input type="number" inputmode="decimal" class="mf-input" data-meal="breakfast" data-mfield="kcal" value="0"><span class="mf-unit">kcal</span></div>
+            <div class="meal-field"><input type="number" inputmode="decimal" class="mf-input" data-meal="breakfast" data-mfield="p" value="0"><span class="mf-unit">P g</span></div>
+            <div class="meal-field"><input type="number" inputmode="decimal" class="mf-input" data-meal="breakfast" data-mfield="f" value="0"><span class="mf-unit">F g</span></div>
+            <div class="meal-field"><input type="number" inputmode="decimal" class="mf-input" data-meal="breakfast" data-mfield="c" value="0"><span class="mf-unit">C g</span></div>
+          </div>
+        </div>
+        <div class="meal-sub" data-meal="lunch" style="margin-bottom:12px;">
+          <div style="font-size:12.5px;font-weight:700;margin-bottom:6px;color:var(--gold);">昼食</div>
+          <div class="meal-sub-row" style="display:flex;gap:8px;flex-wrap:wrap;">
+            <div class="meal-field"><input type="number" inputmode="decimal" class="mf-input" data-meal="lunch" data-mfield="kcal" value="0"><span class="mf-unit">kcal</span></div>
+            <div class="meal-field"><input type="number" inputmode="decimal" class="mf-input" data-meal="lunch" data-mfield="p" value="0"><span class="mf-unit">P g</span></div>
+            <div class="meal-field"><input type="number" inputmode="decimal" class="mf-input" data-meal="lunch" data-mfield="f" value="0"><span class="mf-unit">F g</span></div>
+            <div class="meal-field"><input type="number" inputmode="decimal" class="mf-input" data-meal="lunch" data-mfield="c" value="0"><span class="mf-unit">C g</span></div>
+          </div>
+        </div>
+        <div class="meal-sub" data-meal="dinner" style="margin-bottom:12px;">
+          <div style="font-size:12.5px;font-weight:700;margin-bottom:6px;color:var(--gold);">夕食</div>
+          <div class="meal-sub-row" style="display:flex;gap:8px;flex-wrap:wrap;">
+            <div class="meal-field"><input type="number" inputmode="decimal" class="mf-input" data-meal="dinner" data-mfield="kcal" value="0"><span class="mf-unit">kcal</span></div>
+            <div class="meal-field"><input type="number" inputmode="decimal" class="mf-input" data-meal="dinner" data-mfield="p" value="0"><span class="mf-unit">P g</span></div>
+            <div class="meal-field"><input type="number" inputmode="decimal" class="mf-input" data-meal="dinner" data-mfield="f" value="0"><span class="mf-unit">F g</span></div>
+            <div class="meal-field"><input type="number" inputmode="decimal" class="mf-input" data-meal="dinner" data-mfield="c" value="0"><span class="mf-unit">C g</span></div>
+          </div>
+        </div>
+        <div class="meal-sub" data-meal="snack" style="margin-bottom:4px;">
+          <div style="font-size:12.5px;font-weight:700;margin-bottom:6px;color:var(--gold);">間食(いつでも追加)</div>
+          <div id="snackList"></div>
+          <button class="chip" id="snackAddBtn" type="button" style="font-size:12px;">＋ 間食を追加</button>
+        </div>
+      </div>
+
+      <div style="margin-top:6px;padding-top:10px;border-top:1px solid var(--line-soft);font-family:'JetBrains Mono', monospace;font-size:13px;">
+        合計: <span id="mealTotalKcal">0</span> kcal / P<span id="mealTotalP">0</span> / F<span id="mealTotalF">0</span> / C<span id="mealTotalC">0</span>
+      </div>
+
+      <div class="quality-slider">
+        <span style="font-size:11px;color:var(--muted);">質の補正</span>
+        <input type="range" id="quality" min="-2" max="2" step="1" value="0">
+        <span class="qval" id="qualityVal">±0</span>
+      </div>
+      <div class="micro-note">目標 TDEE2000 / P130 / F50 / C260(食物繊維前提、1日合計)。PFC遵守15点+カロリー遵守5点。質の補正は±2点。<br>超過は厳しく減点(5%超で減点開始、20%超で0点)/ 不足は緩め(10%まで満点、40%で0点)。<br>朝食・間食・昼食・夕食を別々に入力すると、下に自動で合計とスコアが出ます。カロリー計算はこのチャットに直接メニュー名や写真を送ってもらえれば、その場で計算して返します。</div>
+    </div>
+
+    <div class="cat" id="cat-english">
+      <div class="cat-head"><div class="cat-title">英語</div><div class="cat-score"><b id="s-english">0</b> / 35</div></div>
+      <div class="bar"><div class="bar-fill" id="b-english" style="width:0%"></div></div>
+      <div class="stepper" data-field="english" data-step="0.5" data-min="0" data-max="8">
+        <button data-d="-1">−</button><div class="val"><span class="v">0</span><span class="unit"> 時間</span></div><button data-d="1">+</button>
+      </div>
+      <div class="micro-note">5時間で満点(35点)。1時間=7点換算。</div>
+
+      <div class="pomo" style="margin-top:12px;border-top:1px solid var(--line-soft);padding-top:12px;">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <span id="pomoPhaseLabel" style="font-size:12px;color:var(--muted);letter-spacing:.05em;">集中 25分 — スタート待ち</span>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin:10px 0;">
+          <div id="pomoTime" style="font-family:'JetBrains Mono', monospace;font-size:34px;letter-spacing:.03em;">25:00</div>
+        </div>
+        <div style="display:flex;gap:8px;justify-content:center;">
+          <button class="chip" id="pomoStartBtn" type="button">開始</button>
+          <button class="chip" id="pomoResetBtn" type="button">リセット</button>
+        </div>
+        <div class="micro-note" style="text-align:center;margin-top:8px;">25分集中 → 5分休憩 → 25分集中でワンセット。完了すると自動で英語時間(0.83h)が加算されます。</div>
+      </div>
+    </div>
+
+    <div class="cat" id="cat-train">
+      <div class="cat-head"><div class="cat-title">筋トレ</div><div class="cat-score"><b id="s-train">0</b> / 20</div></div>
+      <div class="bar"><div class="bar-fill" id="b-train" style="width:0%"></div></div>
+      <div class="toggle-grid">
+        <button class="chip" data-toggle="cardio">有酸素 30分(傾斜12% 6km)</button>
+      </div>
+      <div class="toggle-grid" style="margin-top:8px;">
+        <button class="chip" data-part="A">A: 胸/三頭</button>
+        <button class="chip" data-part="B">B: 背中/二頭</button>
+        <button class="chip" data-part="C">C: 脚/体幹</button>
+      </div>
+      <div class="micro-note">有酸素10点+部位別メニュー完遂10点(いずれか1部位でOK)。<br>
+      <b>A(胸/三頭)</b>: チェストプレス10回×3 / ディップス10回×3<br>
+      <b>B(背中/二頭)</b>: ラットプルダウン10回×3 / バイセップスカール10回×3<br>
+      <b>C(脚/体幹)</b>: レッグプレス10回×3 / アダクション・アブダクション / アブドミナル(腹筋マシン)10回×3<br>
+      有酸素: トレッドミル 傾斜12% 6km/h 30分<br>
+      ※チョコザップは店舗によりマシン種類・台数が異なるため、上記は標準的な構成です。実際の設置状況はアプリの店舗ページで必ず確認してください。</div>
+    </div>
+
+    <div class="cat" id="cat-sleep">
+      <div class="cat-head"><div class="cat-title">睡眠</div><div class="cat-score"><b id="s-sleep">0</b> / 10</div></div>
+      <div class="bar"><div class="bar-fill" id="b-sleep" style="width:0%"></div></div>
+      <div class="stepper" data-field="sleep" data-step="10" data-min="0" data-max="100">
+        <button data-d="-1">−</button><div class="val"><span class="v">0</span><span class="unit"> 睡眠スコア</span></div><button data-d="1">+</button>
+        <span id="sleepInline" style="font-family:'JetBrains Mono', monospace;font-size:12px;color:var(--gold);margin-left:4px;">→ 0点</span>
+      </div>
+      <div class="stepper" data-field="sleep" data-step="1" data-min="0" data-max="100" style="margin-top:6px;">
+        <button data-d="-1">−1</button><span style="font-size:10.5px;color:var(--muted);">1点単位の微調整</span><button data-d="1">+1</button>
+      </div>
+      <div class="micro-note">睡眠スコア×0.1点。</div>
+    </div>
+
+    <div class="cat" id="cat-med">
+      <div class="cat-head"><div class="cat-title">瞑想</div><div class="cat-score"><b id="s-med">0</b> / 4</div></div>
+      <div class="bar"><div class="bar-fill" id="b-med" style="width:0%"></div></div>
+      <div class="stepper" data-field="med" data-step="1" data-min="0" data-max="2">
+        <button data-d="-1">−</button><div class="val"><span class="v">0</span><span class="unit"> 回</span></div><button data-d="1">+</button>
+      </div>
+      <div class="micro-note">2回実施で満点(1回=2点)。</div>
+    </div>
+
+    <div class="cat" id="cat-misc">
+      <div class="cat-head"><div class="cat-title">ジャーナル / タイピング</div><div class="cat-score"><b id="s-misc">0</b> / 8</div></div>
+      <div class="bar"><div class="bar-fill" id="b-misc" style="width:0%"></div></div>
+      <div class="toggle-grid">
+        <button class="chip" data-toggle="journal">ジャーナル実施</button>
+        <button class="chip" data-toggle="typing">タイピング実施</button>
+      </div>
+    </div>
+
+    <div class="cat" id="cat-screen">
+      <div class="cat-head"><div class="cat-title">スクリーンタイム</div><div class="cat-score"><b id="s-screen">0</b> / 3</div></div>
+      <div class="bar"><div class="bar-fill" id="b-screen" style="width:0%"></div></div>
+      <div class="row2">
+        <div class="stepper" data-field="screenH" data-step="1" data-min="0" data-max="16">
+          <button data-d="-1">−</button><div class="val"><span class="v">0</span><span class="unit"> 時間</span></div><button data-d="1">+</button>
+        </div>
+        <div class="stepper" data-field="screenM" data-step="5" data-min="0" data-max="55">
+          <button data-d="-1">−</button><div class="val"><span class="v">0</span><span class="unit"> 分</span></div><button data-d="1">+</button>
+        </div>
+      </div>
+      <div style="margin-top:6px;font-family:'JetBrains Mono', monospace;font-size:12px;color:var(--gold);" id="screenInline">→ +3点</div>
+      <div class="micro-note">正味の使用時間を「時間」「分」で入力。合計が8時間以下で+3点。超過は−1点。</div>
+    </div>
+
+  </div>
+
+  <div class="heat-title">直近35日</div>
+  <div class="heatgrid" id="heatgrid"></div>
+  <div class="legend">
+    <span>低</span><span class="sq" style="background:rgba(183,57,44,0.12)"></span>
+    <span class="sq" style="background:rgba(183,57,44,0.35)"></span>
+    <span class="sq" style="background:rgba(183,57,44,0.65)"></span>
+    <span class="sq" style="background:rgba(201,162,74,0.9)"></span><span>高</span>
+  </div>
+  <div class="micro-note" style="text-align:center;margin-top:10px;">継続日数は「総合70点以上 かつ 健康コア(食事+筋トレ+睡眠)35/50以上」の日でカウント。英語だけ頑張っても継続にはなりません。週1回だけ失敗しても継続は途切れない猶予付き。</div>
+
+  <div class="cat" style="margin-top:22px;border-color:var(--seal);">
+    <div class="cat-head"><div class="cat-title" style="color:var(--gold);">コーチメモ — 傾向と対策</div></div>
+    <div class="micro-note" style="font-size:11.5px;line-height:1.8;color:var(--paper);">
+      <b>やったこと</b>: 脂肪肝・高コレステロール・高血糖という具体的な数値目標を設定し、基準まで作り込みました。「英語だけは削らない」と明言し、逆に「カロリー超過はもっと厳しく採点してほしい」と自分から負荷を上げる方向に修正した点は、本気度の表れだと思います。<br><br>
+      <b>見えた注意点</b>: 一方で「手入力を減らしたい」「写真やHealthアプリから自動で点数を出したい」という要望も繰り返し出ていました。負担を減らす工夫自体はとても良いことですが、行き過ぎると記録が雑になりやすい側面もあります。AI推定やHealth連携には限界があるので、最終的には自分の目で数値を確認する一手間は残しておくのがおすすめです。<br><br>
+      <b>まだやれていないこと</b>: この時点ではまだ実際の記録が1日も入っていません。基準とアプリは仕上がったので、ここからが本番です。<br><br>
+      <b>これから</b>: まず1週間、健康コア(食事+筋トレ+睡眠)が35を割った日が何日あったか、正直に見てみてください。英語を削らないと決めた分、健康コアの方は自分でチェックする習慣をつけると効果的です。週1回の猶予は「疲れて記録し忘れた日」のためのものとして使うと、本来の狙い通りに機能します。
+    </div>
+  </div>
+
+  <div class="cat" id="cat-health" style="margin-top:22px;border-color:var(--gold);">
+    <div class="cat-head"><div class="cat-title" style="color:var(--gold);">健康指標(結果)</div></div>
+    <div class="micro-note" style="margin-bottom:10px;">スコアには影響しません。行動(食事/筋トレなど)が実際に数値を動かせているか確認するための記録です。上の日付ナビで日付を選んでから記録してください。</div>
+
+    <div style="font-size:12.5px;font-weight:700;margin-bottom:6px;">体重(週1目安)</div>
+    <div class="stepper health-stepper" data-hfield="weight" data-step="0.5" data-min="30" data-max="200">
+      <button data-d="-1">−</button><div class="val"><span class="v">70</span><span class="unit"> kg</span></div><button data-d="1">+</button>
+    </div>
+    <button class="chip" id="healthWeightBtn" type="button" style="margin-top:8px;background:var(--gold);border-color:var(--gold);color:var(--ink);font-weight:700;">体重を記録</button>
+    <div class="micro-note" id="healthWeightStatus" style="margin-top:6px;"></div>
+
+    <div style="font-size:12.5px;font-weight:700;margin:18px 0 6px;border-top:1px solid var(--line-soft);padding-top:14px;">血液検査(不定期・採血のたびに)</div>
+    <div class="row2">
+      <div class="stepper health-stepper" data-hfield="ast" data-step="1" data-min="0" data-max="300">
+        <button data-d="-1">−</button><div class="val"><span class="v">20</span><span class="unit"> AST</span></div><button data-d="1">+</button>
+      </div>
+      <div class="stepper health-stepper" data-hfield="alt" data-step="1" data-min="0" data-max="300">
+        <button data-d="-1">−</button><div class="val"><span class="v">20</span><span class="unit"> ALT</span></div><button data-d="1">+</button>
+      </div>
+    </div>
+    <div class="row2" style="margin-top:8px;">
+      <div class="stepper health-stepper" data-hfield="ggt" data-step="1" data-min="0" data-max="300">
+        <button data-d="-1">−</button><div class="val"><span class="v">20</span><span class="unit"> γ-GTP</span></div><button data-d="1">+</button>
+      </div>
+      <div class="stepper health-stepper" data-hfield="ldl" data-step="1" data-min="0" data-max="300">
+        <button data-d="-1">−</button><div class="val"><span class="v">100</span><span class="unit"> LDL</span></div><button data-d="1">+</button>
+      </div>
+    </div>
+    <div class="stepper health-stepper" data-hfield="hba1c" data-step="0.1" data-min="3" data-max="15" style="margin-top:8px;">
+      <button data-d="-1">−</button><div class="val"><span class="v">5.5</span><span class="unit"> HbA1c%</span></div><button data-d="1">+</button>
+    </div>
+    <button class="chip" id="healthLabsBtn" type="button" style="margin-top:8px;background:var(--gold);border-color:var(--gold);color:var(--ink);font-weight:700;">血液検査を記録</button>
+    <div class="micro-note" id="healthLabsStatus" style="margin-top:6px;"></div>
+
+    <div style="margin-top:14px;border-top:1px solid var(--line-soft);padding-top:10px;">
+      <div style="font-size:11.5px;color:var(--muted);margin-bottom:6px;">直近の記録</div>
+      <div id="healthHistory" style="font-family:'JetBrains Mono', monospace;font-size:11px;line-height:1.9;color:var(--paper);">読み込み中...</div>
+    </div>
+  </div>
+
+  <div class="cat" id="cat-backup" style="margin-top:9px;border-color:var(--line);">
+    <div class="cat-head"><div class="cat-title">バックアップ</div></div>
+    <div class="micro-note" style="margin-bottom:10px;">直近120日分の記録+健康指標をまとめて書き出します。何かあった時のために、たまにコピーして手元に保存しておいてください。</div>
+    <button class="chip" id="backupBtn" type="button">バックアップを作成</button>
+    <div id="backupStatus" class="micro-note" style="margin-top:8px;"></div>
+    <textarea id="backupOutput" readonly style="display:none;width:100%;height:140px;margin-top:10px;background:var(--panel-2);color:var(--paper);border:1px solid var(--line-soft);border-radius:4px;font-family:'JetBrains Mono', monospace;font-size:10px;padding:8px;"></textarea>
+    <div style="display:flex;gap:8px;margin-top:8px;">
+      <button class="chip" id="backupCopyBtn" type="button" style="display:none;">全選択してコピー</button>
+      <a id="backupDownloadLink" style="display:none;" class="chip">ファイルとして保存</a>
+    </div>
+  </div>
+
+  <div class="footer-note">SAVE状態: <span id="saveState">-</span></div>
+</div>
+
+<script>
+const TARGETS = { kcal: 2000, p: 130, f: 50, c: 260 };
+const STREAK_THRESHOLD = 70;
+
+function fmtDate(d){
+  const y=d.getFullYear(), m=String(d.getMonth()+1).padStart(2,'0'), day=String(d.getDate()).padStart(2,'0');
+  return `${y}-${m}-${day}`;
+}
+function parseDate(s){ const [y,m,d]=s.split('-').map(Number); return new Date(y,m-1,d); }
+const DOW = ['日','月','火','水','木','金','土'];
+
+let current = new Date();
+let state = defaultState();
+
+function emptyMeal(){ return {kcal:0, p:0, f:0, c:0}; }
+
+function defaultState(){
+  return {
+    meals: {breakfast:emptyMeal(), lunch:emptyMeal(), dinner:emptyMeal()},
+    snacks: [], // 間食は複数回追加できるので配列(食べない日は空のまま)
+    quality:0,
+    english:0,
+    cardio:false, partA:false, partB:false, partC:false,
+    sleep:0, med:0,
+    journal:false, typing:false,
+    screenH:0, screenM:0
+  };
+}
+
+function mealTotals(s){
+  const t = {kcal:0,p:0,f:0,c:0};
+  ['breakfast','lunch','dinner'].forEach(m=>{
+    const mm = (s.meals && s.meals[m]) || emptyMeal();
+    t.kcal += Number(mm.kcal)||0;
+    t.p += Number(mm.p)||0;
+    t.f += Number(mm.f)||0;
+    t.c += Number(mm.c)||0;
+  });
+  (s.snacks||[]).forEach(sn=>{
+    t.kcal += Number(sn.kcal)||0;
+    t.p += Number(sn.p)||0;
+    t.f += Number(sn.f)||0;
+    t.c += Number(sn.c)||0;
+  });
+  return t;
+}
+
+// 不足側は緩め、超過側は厳しめ(血糖・脂肪肝対策で超過を重く減点)
+function macroScoreAsym(actual,target,tolUnder,zeroUnder,tolOver,zeroOver){
+  const diff = actual-target;
+  if(diff<=0){
+    const dev = Math.abs(diff)/target;
+    if(dev<=tolUnder) return 1;
+    if(dev>=zeroUnder) return 0;
+    return 1-(dev-tolUnder)/(zeroUnder-tolUnder);
+  } else {
+    const dev = diff/target;
+    if(dev<=tolOver) return 1;
+    if(dev>=zeroOver) return 0;
+    return 1-(dev-tolOver)/(zeroOver-tolOver);
+  }
+}
+
+function computeScores(s){
+  const totals = mealTotals(s);
+  // 不足: 10%まで満点/40%で0点。超過: 5%までしか許容せず20%で0点(厳格)
+  const pS = macroScoreAsym(totals.p,TARGETS.p,0.1,0.4,0.05,0.2);
+  const fS = macroScoreAsym(totals.f,TARGETS.f,0.1,0.4,0.05,0.2);
+  const cS = macroScoreAsym(totals.c,TARGETS.c,0.1,0.4,0.05,0.2);
+  const pfc = ((pS+fS+cS)/3)*15;
+  const kcalS = macroScoreAsym(totals.kcal,TARGETS.kcal,0.1,0.3,0.05,0.15)*5;
+  let meal = pfc + kcalS + (s.quality||0);
+  meal = Math.max(0, Math.min(20, meal));
+
+  const english = Math.max(0, Math.min(35, s.english*7));
+
+  const partDone = s.partA || s.partB || s.partC;
+  const train = (s.cardio?10:0) + (partDone?10:0);
+
+  const sleep = Math.max(0, Math.min(10, s.sleep*0.1));
+  const med = Math.max(0, Math.min(4, s.med*2));
+  const misc = (s.journal?4:0) + (s.typing?4:0);
+  const screenHours = (s.screenH||0) + (s.screenM||0)/60;
+  const screen = screenHours<=8 ? 3 : -1;
+
+  const total = Math.max(0, meal+english+train+sleep+med+misc+screen);
+  const healthCore = meal+train+sleep; // /50点。英語を含まない健康の核
+  return {meal,english,train,sleep,med,misc,screen,total,healthCore};
+}
+
+function renderScores(){
+  const sc = computeScores(state);
+  document.getElementById('s-meal').textContent = sc.meal.toFixed(1);
+  document.getElementById('b-meal').style.width = (sc.meal/20*100)+'%';
+  document.getElementById('s-english').textContent = sc.english.toFixed(1);
+  document.getElementById('b-english').style.width = (sc.english/35*100)+'%';
+  document.getElementById('s-train').textContent = sc.train;
+  document.getElementById('b-train').style.width = (sc.train/20*100)+'%';
+  document.getElementById('s-sleep').textContent = sc.sleep.toFixed(1);
+  document.getElementById('b-sleep').style.width = (sc.sleep/10*100)+'%';
+  document.getElementById('sleepInline').textContent = `→ ${sc.sleep.toFixed(1)}点`;
+  document.getElementById('s-med').textContent = sc.med;
+  document.getElementById('b-med').style.width = (sc.med/4*100)+'%';
+  document.getElementById('s-misc').textContent = sc.misc;
+  document.getElementById('b-misc').style.width = (sc.misc/8*100)+'%';
+  document.getElementById('s-screen').textContent = sc.screen;
+  document.getElementById('b-screen').style.width = (Math.max(0,sc.screen)/3*100)+'%';
+  document.getElementById('screenInline').textContent = `→ ${sc.screen>0?'+':''}${sc.screen}点`;
+
+  const total = Math.round(sc.total);
+  document.getElementById('scoreVal').textContent = total;
+  const seal = document.getElementById('seal');
+  seal.classList.toggle('high', total>=STREAK_THRESHOLD);
+  document.getElementById('healthCoreLabel').textContent = `健康コア ${Math.round(sc.healthCore)} / 50`;
+  return sc.total;
+}
+
+function renderInputs(){
+  ['breakfast','lunch','dinner'].forEach(m=>{
+    ['kcal','p','f','c'].forEach(f=>{
+      const el = document.querySelector(`.mf-input[data-meal="${m}"][data-mfield="${f}"]`);
+      if(el) el.value = (state.meals && state.meals[m]) ? state.meals[m][f] : 0;
+    });
+  });
+  renderSnacks();
+  const totals = mealTotals(state);
+  document.getElementById('mealTotalKcal').textContent = Math.round(totals.kcal);
+  document.getElementById('mealTotalP').textContent = Math.round(totals.p);
+  document.getElementById('mealTotalF').textContent = Math.round(totals.f);
+  document.getElementById('mealTotalC').textContent = Math.round(totals.c);
+
+  document.getElementById('quality').value = state.quality;
+  document.getElementById('qualityVal').textContent = (state.quality>0?'+':'')+state.quality;
+  document.querySelector('[data-field="english"] .v').textContent = state.english;
+  document.querySelectorAll('[data-field="sleep"] .v').forEach(el=> el.textContent = state.sleep);
+  document.querySelector('[data-field="med"] .v').textContent = state.med;
+  document.querySelector('[data-field="screenH"] .v').textContent = state.screenH;
+  document.querySelector('[data-field="screenM"] .v').textContent = state.screenM;
+
+  document.querySelector('[data-toggle="cardio"]').classList.toggle('on', state.cardio);
+  document.querySelector('[data-toggle="journal"]').classList.toggle('on', state.journal);
+  document.querySelector('[data-toggle="typing"]').classList.toggle('on', state.typing);
+  document.querySelector('[data-part="A"]').classList.toggle('on', state.partA);
+  document.querySelector('[data-part="B"]').classList.toggle('on', state.partB);
+  document.querySelector('[data-part="C"]').classList.toggle('on', state.partC);
+}
+
+function updateDateLabel(){
+  document.getElementById('dateLabel').textContent = fmtDate(current);
+  document.getElementById('dowLabel').textContent = DOW[current.getDay()]+'曜';
+}
+
+let saveTimer=null;
+const memoryCache={}; // storage APIが失敗した時の保険(このセッション内のみ有効)
+
+async function saveState(){
+  const key = 'day:'+fmtDate(current);
+  const payload = JSON.stringify(state);
+  memoryCache[key] = payload; // 常にまずメモリに保持
+  document.getElementById('saveState').textContent='保存中...';
+  let ok=false;
+  for(let attempt=0; attempt<2 && !ok; attempt++){
+    try{
+      localStorage.setItem(key, payload);
+      ok=true;
+    }catch(e){
+      console.error(e);
+      if(attempt===0) await new Promise(r=>setTimeout(r,400));
+    }
+  }
+  if(ok){
+    document.getElementById('saveState').textContent='保存済み '+new Date().toLocaleTimeString('ja-JP');
+  } else {
+    document.getElementById('saveState').textContent='⚠ クラウド保存失敗(この画面を開いている間は一時保持されています。閉じる前にもう一度お試しください)';
+  }
+  renderHeatmap();
+}
+function scheduleSave(){
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(saveState, 500);
+}
+
+async function loadState(){
+  const key='day:'+fmtDate(current);
+  try{
+    const r = localStorage.getItem(key);
+    state = r ? JSON.parse(r) : (memoryCache[key] ? JSON.parse(memoryCache[key]) : defaultState());
+  }catch(e){
+    state = memoryCache[key] ? JSON.parse(memoryCache[key]) : defaultState();
+  }
+  // 旧形式(screen:小数時間)からの移行
+  if(state.screen!==undefined && state.screenH===undefined){
+    state.screenH = Math.floor(state.screen);
+    state.screenM = Math.round((state.screen-state.screenH)*60);
+    delete state.screen;
+  }
+  if(state.screenH===undefined) state.screenH=0;
+  if(state.screenM===undefined) state.screenM=0;
+  // 旧形式(kcal/p/f/cが日合計1本だった頃)からの移行: 昼食に丸ごと入れて継続性を保つ
+  if(state.meals===undefined){
+    const hadOld = (state.kcal!==undefined || state.p!==undefined || state.f!==undefined || state.c!==undefined);
+    state.meals = {
+      breakfast: emptyMeal(), dinner: emptyMeal(),
+      lunch: hadOld ? {kcal:state.kcal||0, p:state.p||0, f:state.f||0, c:state.c||0} : emptyMeal()
+    };
+    delete state.kcal; delete state.p; delete state.f; delete state.c;
+  }
+  // 旧形式(間食がmeals.snackという単体オブジェクトだった頃)からsnacks配列への移行
+  if(state.snacks===undefined){
+    const oldSnack = state.meals && state.meals.snack;
+    const hadSnack = oldSnack && (oldSnack.kcal || oldSnack.p || oldSnack.f || oldSnack.c);
+    state.snacks = hadSnack ? [oldSnack] : [];
+  }
+  if(state.meals && state.meals.snack!==undefined){
+    delete state.meals.snack;
+  }
+  renderInputs();
+  renderScores();
+  updateDateLabel();
+}
+
+function bindStepper(el){
+  const field = el.dataset.field;
+  const step = parseFloat(el.dataset.step);
+  const min = parseFloat(el.dataset.min);
+  const max = parseFloat(el.dataset.max);
+  el.querySelectorAll('button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const dir = parseInt(btn.dataset.d);
+      let v = (state[field]||0) + dir*step;
+      v = Math.round(v*100)/100;
+      v = Math.max(min, Math.min(max, v));
+      state[field]=v;
+      renderInputs();
+      renderScores();
+      scheduleSave();
+    });
+  });
+}
+document.querySelectorAll('.stepper[data-field]').forEach(bindStepper);
+
+function updateMealTotalsDisplay(){
+  const totals = mealTotals(state);
+  document.getElementById('mealTotalKcal').textContent = Math.round(totals.kcal);
+  document.getElementById('mealTotalP').textContent = Math.round(totals.p);
+  document.getElementById('mealTotalF').textContent = Math.round(totals.f);
+  document.getElementById('mealTotalC').textContent = Math.round(totals.c);
+}
+
+// 食事(朝食/昼食/夕食)のkcal/P/F/Cは直接数字を打ち込んで反映
+document.querySelectorAll('.mf-input').forEach(inputEl=>{
+  const meal = inputEl.dataset.meal;
+  const field = inputEl.dataset.mfield;
+  function commit(){
+    let v = parseFloat(inputEl.value);
+    if(isNaN(v) || v<0) v = 0;
+    if(!state.meals) state.meals = {breakfast:emptyMeal(), lunch:emptyMeal(), dinner:emptyMeal()};
+    if(!state.meals[meal]) state.meals[meal] = emptyMeal();
+    state.meals[meal][field] = v;
+  }
+  inputEl.addEventListener('input', ()=>{
+    commit();
+    updateMealTotalsDisplay(); // 入力中はカーソル維持のため合計欄だけ更新
+    renderScores();
+    scheduleSave();
+  });
+  inputEl.addEventListener('blur', ()=>{
+    commit();
+    renderInputs();
+    renderScores();
+    scheduleSave();
+  });
+  inputEl.addEventListener('focus', ()=> inputEl.select());
+});
+
+// --- 間食(複数回追加可能・食べない日はボタンのみ表示) ---
+function renderSnacks(){
+  const list = document.getElementById('snackList');
+  if(!list) return;
+  list.innerHTML = '';
+  (state.snacks||[]).forEach((sn, idx)=>{
+    const row = document.createElement('div');
+    row.className = 'meal-sub-row';
+    row.style.cssText = 'display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:8px;';
+    ['kcal','p','f','c'].forEach(f=>{
+      const field = document.createElement('div');
+      field.className = 'meal-field';
+      const input = document.createElement('input');
+      input.type = 'number'; input.inputMode = 'decimal'; input.className = 'mf-input';
+      input.dataset.snackIndex = idx; input.dataset.mfield = f;
+      input.value = sn[f] || 0;
+      const unit = document.createElement('span');
+      unit.className = 'mf-unit';
+      unit.textContent = f==='kcal' ? 'kcal' : (f.toUpperCase()+' g');
+      field.appendChild(input); field.appendChild(unit);
+      row.appendChild(field);
+
+      input.addEventListener('input', ()=>{
+        let v = parseFloat(input.value); if(isNaN(v)||v<0) v=0;
+        state.snacks[idx][f] = v;
+        updateMealTotalsDisplay();
+        renderScores();
+        scheduleSave();
+      });
+      input.addEventListener('blur', ()=>{
+        let v = parseFloat(input.value); if(isNaN(v)||v<0) v=0;
+        state.snacks[idx][f] = v; input.value = v;
+        renderScores();
+        scheduleSave();
+      });
+      input.addEventListener('focus', ()=> input.select());
+    });
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'chip';
+    removeBtn.type = 'button';
+    removeBtn.textContent = '×';
+    removeBtn.style.cssText = 'padding:6px 12px;';
+    removeBtn.addEventListener('click', ()=>{
+      state.snacks.splice(idx,1);
+      renderSnacks();
+      renderScores();
+      scheduleSave();
+    });
+    row.appendChild(removeBtn);
+    list.appendChild(row);
+  });
+}
+document.getElementById('snackAddBtn').addEventListener('click', ()=>{
+  if(!state.snacks) state.snacks = [];
+  state.snacks.push(emptyMeal());
+  renderSnacks();
+  scheduleSave();
+});
+
+// --- 健康指標(体重・血液検査): スコアとは無関係の別トラック ---
+const healthInputs = {weight:70, ast:20, alt:20, ggt:20, ldl:100, hba1c:5.5};
+
+function renderHealthInputs(){
+  document.querySelectorAll('.health-stepper').forEach(el=>{
+    const f = el.dataset.hfield;
+    const v = el.querySelector('.v');
+    if(v) v.textContent = healthInputs[f];
+  });
+}
+function bindHealthStepper(el){
+  const field = el.dataset.hfield;
+  const step = parseFloat(el.dataset.step);
+  const min = parseFloat(el.dataset.min);
+  const max = parseFloat(el.dataset.max);
+  el.querySelectorAll('button').forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      const dir = parseInt(btn.dataset.d);
+      let val = (healthInputs[field]||0) + dir*step;
+      val = Math.round(val*100)/100;
+      val = Math.max(min, Math.min(max, val));
+      healthInputs[field]=val;
+      renderHealthInputs();
+    });
+  });
+}
+document.querySelectorAll('.health-stepper').forEach(bindHealthStepper);
+renderHealthInputs();
+
+async function loadHealthLog(){
+  try{
+    const r = localStorage.getItem('healthlog');
+    return r ? JSON.parse(r) : [];
+  }catch(e){
+    return [];
+  }
+}
+async function saveHealthLog(log){
+  try{
+    localStorage.setItem('healthlog', JSON.stringify(log));
+    return true;
+  }catch(e){
+    console.error(e);
+    return false;
+  }
+}
+function upsertHealthEntry(log, dateStr, fields){
+  const idx = log.findIndex(e=>e.date===dateStr);
+  if(idx>=0){
+    log[idx] = {...log[idx], ...fields};
+  } else {
+    log.push({date:dateStr, ...fields});
+  }
+  log.sort((a,b)=> a.date<b.date ? -1 : 1);
+  return log;
+}
+
+document.getElementById('healthWeightBtn').addEventListener('click', async ()=>{
+  const statusEl = document.getElementById('healthWeightStatus');
+  statusEl.textContent='記録中...';
+  const log = await loadHealthLog();
+  const updated = upsertHealthEntry(log, fmtDate(current), {weight:healthInputs.weight});
+  const ok = await saveHealthLog(updated);
+  statusEl.textContent = ok ? `${fmtDate(current)} に体重 ${healthInputs.weight}kg を記録しました` : '保存に失敗しました。もう一度お試しください';
+  renderHealthHistory();
+});
+
+document.getElementById('healthLabsBtn').addEventListener('click', async ()=>{
+  const statusEl = document.getElementById('healthLabsStatus');
+  statusEl.textContent='記録中...';
+  const log = await loadHealthLog();
+  const updated = upsertHealthEntry(log, fmtDate(current), {
+    ast:healthInputs.ast, alt:healthInputs.alt, ggt:healthInputs.ggt,
+    ldl:healthInputs.ldl, hba1c:healthInputs.hba1c
+  });
+  const ok = await saveHealthLog(updated);
+  statusEl.textContent = ok ? `${fmtDate(current)} に血液検査を記録しました` : '保存に失敗しました。もう一度お試しください';
+  renderHealthHistory();
+});
+
+async function renderHealthHistory(){
+  const el = document.getElementById('healthHistory');
+  const log = await loadHealthLog();
+  if(log.length===0){ el.textContent='まだ記録がありません'; return; }
+  const recent = [...log].sort((a,b)=> a.date<b.date?1:-1).slice(0,8);
+  el.innerHTML = recent.map(e=>{
+    const parts=[];
+    if(e.weight!==undefined) parts.push(`体重${e.weight}kg`);
+    if(e.ast!==undefined) parts.push(`AST${e.ast}`);
+    if(e.alt!==undefined) parts.push(`ALT${e.alt}`);
+    if(e.ggt!==undefined) parts.push(`γGTP${e.ggt}`);
+    if(e.ldl!==undefined) parts.push(`LDL${e.ldl}`);
+    if(e.hba1c!==undefined) parts.push(`HbA1c${e.hba1c}`);
+    return `${e.date}: ${parts.join(' / ')}`;
+  }).join('<br>');
+}
+renderHealthHistory();
+
+// --- バックアップ ---
+document.getElementById('backupBtn').addEventListener('click', async ()=>{
+  const statusEl = document.getElementById('backupStatus');
+  const output = document.getElementById('backupOutput');
+  const copyBtn = document.getElementById('backupCopyBtn');
+  const dlLink = document.getElementById('backupDownloadLink');
+  statusEl.textContent = '作成中(直近120日分を確認しています)...';
+  const days=[];
+  for(let i=119;i>=0;i--){
+    const d=new Date(); d.setDate(d.getDate()-i);
+    days.push(fmtDate(d));
+  }
+  const dayRecords = await Promise.all(days.map(async d=>{
+    try{
+      const r = localStorage.getItem('day:'+d);
+      return r ? {date:d, ...JSON.parse(r)} : null;
+    }catch(e){ return null; }
+  }));
+  const healthlog = await loadHealthLog();
+  const backup = {
+    exportedAt: new Date().toISOString(),
+    dailyRecords: dayRecords.filter(Boolean),
+    healthlog
+  };
+  const text = JSON.stringify(backup, null, 2);
+  output.value = text;
+  output.style.display='block';
+  copyBtn.style.display='inline-block';
+  statusEl.textContent = `${backup.dailyRecords.length}日分の記録+健康指標${healthlog.length}件を書き出しました。下のテキストを保存するか、コピーしてメモアプリなどに貼り付けてください。`;
+
+  try{
+    const blob = new Blob([text], {type:'application/json'});
+    const url = URL.createObjectURL(blob);
+    dlLink.href = url;
+    dlLink.download = `monk-mode-backup-${fmtDate(new Date())}.json`;
+    dlLink.style.display='inline-block';
+  }catch(e){
+    console.error(e);
+  }
+});
+document.getElementById('backupCopyBtn').addEventListener('click', ()=>{
+  const output = document.getElementById('backupOutput');
+  output.focus();
+  output.select();
+  try{
+    document.execCommand('copy');
+    document.getElementById('backupStatus').textContent = 'コピーしました。メモアプリなどに貼り付けて保存してください。';
+  }catch(e){
+    document.getElementById('backupStatus').textContent = 'コピーに失敗しました。テキストを長押しして手動でコピーしてください。';
+  }
+});
+
+document.querySelector('[data-toggle="cardio"]').addEventListener('click', ()=>{
+  state.cardio=!state.cardio; renderInputs(); renderScores(); scheduleSave();
+});
+document.querySelector('[data-toggle="journal"]').addEventListener('click', ()=>{
+  state.journal=!state.journal; renderInputs(); renderScores(); scheduleSave();
+});
+document.querySelector('[data-toggle="typing"]').addEventListener('click', ()=>{
+  state.typing=!state.typing; renderInputs(); renderScores(); scheduleSave();
+});
+['A','B','C'].forEach(p=>{
+  document.querySelector(`[data-part="${p}"]`).addEventListener('click', ()=>{
+    state['part'+p] = !state['part'+p];
+    renderInputs(); renderScores(); scheduleSave();
+  });
+});
+document.getElementById('quality').addEventListener('input', (e)=>{
+  state.quality = parseInt(e.target.value);
+  document.getElementById('qualityVal').textContent = (state.quality>0?'+':'')+state.quality;
+  renderScores(); scheduleSave();
+});
+
+document.getElementById('prevDay').addEventListener('click', ()=>{
+  current.setDate(current.getDate()-1); loadState();
+});
+document.getElementById('nextDay').addEventListener('click', ()=>{
+  current.setDate(current.getDate()+1); loadState();
+});
+
+// --- ポモドーロ(25-5-25) ---
+const POMO_PHASES = [
+  {label:'集中 25分', seconds:25*60, isWork:true},
+  {label:'休憩 5分', seconds:5*60, isWork:false},
+  {label:'集中 25分', seconds:25*60, isWork:true}
+];
+let pomoPhaseIdx = 0;
+let pomoRemaining = POMO_PHASES[0].seconds;
+let pomoRunning = false;
+let pomoInterval = null;
+
+const pomoTimeEl = document.getElementById('pomoTime');
+const pomoPhaseLabelEl = document.getElementById('pomoPhaseLabel');
+const pomoStartBtn = document.getElementById('pomoStartBtn');
+const pomoResetBtn = document.getElementById('pomoResetBtn');
+
+function pomoFormat(sec){
+  const m = Math.floor(sec/60), s = sec%60;
+  return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+}
+function pomoRenderTime(){
+  pomoTimeEl.textContent = pomoFormat(pomoRemaining);
+  const phase = POMO_PHASES[pomoPhaseIdx];
+  pomoPhaseLabelEl.textContent = phase.label + (pomoRunning ? ' — 進行中' : (pomoRemaining===phase.seconds ? ' — スタート待ち' : ' — 一時停止中'));
+}
+function pomoBeep(){
+  try{
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.frequency.value = 880;
+    osc.connect(gain); gain.connect(ctx.destination);
+    gain.gain.setValueAtTime(0.15, ctx.currentTime);
+    osc.start();
+    osc.stop(ctx.currentTime+0.3);
+  }catch(e){}
+  if(navigator.vibrate) navigator.vibrate([200,80,200]);
+}
+function pomoTick(){
+  pomoRemaining--;
+  if(pomoRemaining<=0){
+    pomoBeep();
+    if(pomoPhaseIdx < POMO_PHASES.length-1){
+      pomoPhaseIdx++;
+      pomoRemaining = POMO_PHASES[pomoPhaseIdx].seconds;
+      pomoRenderTime();
+    } else {
+      // 1セット完了(25+5+25) → 実質学習50分を英語時間に加算
+      clearInterval(pomoInterval);
+      pomoRunning = false;
+      state.english = Math.round(((state.english||0) + 50/60)*100)/100;
+      renderInputs(); renderScores(); scheduleSave();
+      pomoPhaseIdx = 0;
+      pomoRemaining = POMO_PHASES[0].seconds;
+      pomoStartBtn.textContent = '開始';
+      pomoPhaseLabelEl.textContent = '1セット完了 🎉 お疲れ様';
+      pomoTimeEl.textContent = pomoFormat(pomoRemaining);
+      return;
+    }
+  } else {
+    pomoRenderTime();
+  }
+}
+pomoStartBtn.addEventListener('click', ()=>{
+  if(pomoRunning){
+    pomoRunning = false;
+    clearInterval(pomoInterval);
+    pomoStartBtn.textContent = '再開';
+    pomoRenderTime();
+  } else {
+    pomoRunning = true;
+    pomoStartBtn.textContent = '一時停止';
+    pomoInterval = setInterval(pomoTick, 1000);
+    pomoRenderTime();
+  }
+});
+pomoResetBtn.addEventListener('click', ()=>{
+  pomoRunning = false;
+  clearInterval(pomoInterval);
+  pomoPhaseIdx = 0;
+  pomoRemaining = POMO_PHASES[0].seconds;
+  pomoStartBtn.textContent = '開始';
+  pomoRenderTime();
+});
+pomoRenderTime();
+
+async function renderHeatmap(){
+  const grid = document.getElementById('heatgrid');
+  grid.innerHTML='';
+  const days=[];
+  const todayStr = fmtDate(new Date());
+  for(let i=34;i>=0;i--){
+    const d = new Date();
+    d.setDate(d.getDate()-i);
+    days.push(fmtDate(d));
+  }
+  let scores={};
+  const results = await Promise.all(days.map(async d=>{
+    const key = 'day:'+d;
+    try{
+      const r = localStorage.getItem(key);
+      return {date:d, value:r?JSON.parse(r):null};
+    }catch(e){
+      if(memoryCache[key]){
+        try{ return {date:d, value:JSON.parse(memoryCache[key])}; }catch(e2){}
+      }
+      return {date:d, value:null};
+    }
+  }));
+  results.forEach(r=>{
+    if(r.value){
+      try{
+        const sc = computeScores(r.value);
+        scores[r.date]={total:sc.total, healthCore:sc.healthCore};
+      }catch(e){}
+    }
+  });
+
+  // 継続日数: 総合点だけでなく「健康コア(食事+筋トレ+睡眠、英語を含まない)」も基準に含める。
+  // 英語だけ稼いで健康項目がボロボロの日は継続日数にカウントしない。
+  // ただし週1回まで「猶予」を認め、その1回だけは失敗しても継続を切らない。
+  const HEALTH_CORE_THRESHOLD = 35; // /50点(70%)
+  let streak=0;
+  let graceUsedDates=[];
+  for(let i=days.length-1;i>=0;i--){
+    const d = days[i];
+    const rec = scores[d];
+    const isSuccess = rec!==undefined && rec.total>=STREAK_THRESHOLD && rec.healthCore>=HEALTH_CORE_THRESHOLD;
+    if(isSuccess){ streak++; continue; }
+    if(d===todayStr){ continue; } // 今日はまだ入力途中の可能性があるので保留
+    const graceInWindow = graceUsedDates.filter(gd=>{
+      const diff = (parseDate(gd)-parseDate(d))/(1000*60*60*24);
+      return diff>=0 && diff<=6;
+    }).length;
+    if(graceInWindow>=1){ break; }
+    graceUsedDates.push(d);
+  }
+  document.getElementById('streakLabel').textContent = `継続 ${streak}日`;
+
+  days.forEach(d=>{
+    const cell = document.createElement('div');
+    cell.className='cell'+(d===todayStr?' today':'');
+    const rec = scores[d];
+    if(rec!==undefined){
+      const v = rec.total;
+      const alpha = 0.1 + (Math.min(100,v)/100)*0.75;
+      const isSuccess = v>=STREAK_THRESHOLD && rec.healthCore>=HEALTH_CORE_THRESHOLD;
+      if(isSuccess){
+        cell.style.background = `rgba(201,162,74,${alpha})`;
+      } else {
+        cell.style.background = `rgba(183,57,44,${alpha})`;
+      }
+      cell.title = `${d}: 総合${Math.round(v)}点 / 健康コア${Math.round(rec.healthCore)}`;
+      cell.textContent = Math.round(v);
+    } else {
+      cell.style.background = 'transparent';
+      cell.title = `${d}: 未記録`;
+      cell.textContent = '–';
+      cell.style.color = 'var(--line)';
+    }
+    cell.addEventListener('click', ()=>{
+      current = parseDate(d);
+      loadState();
+    });
+    grid.appendChild(cell);
+  });
+}
+
+loadState();
+renderHeatmap();
+</script>
+</body>
+</html>
