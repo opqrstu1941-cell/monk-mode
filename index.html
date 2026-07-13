@@ -261,21 +261,8 @@
           <button data-d="-1">−</button><div class="val"><span class="v">0</span><span class="unit"> 分</span></div><button data-d="1">+</button>
         </div>
       </div>
+      <div style="margin-top:6px;font-family:'JetBrains Mono', monospace;font-size:13px;color:var(--gold);" id="englishTotalDisplay">合計: 0時間0分</div>
       <div class="micro-note">5時間で満点(35点)。1時間=7点換算。</div>
-
-      <div class="pomo" style="margin-top:12px;border-top:1px solid var(--line-soft);padding-top:12px;">
-        <div style="display:flex;justify-content:space-between;align-items:center;">
-          <span id="pomoPhaseLabel" style="font-size:12px;color:var(--muted);letter-spacing:.05em;">集中 25分 — スタート待ち</span>
-        </div>
-        <div style="display:flex;align-items:center;justify-content:center;gap:16px;margin:10px 0;">
-          <div id="pomoTime" style="font-family:'JetBrains Mono', monospace;font-size:34px;letter-spacing:.03em;">25:00</div>
-        </div>
-        <div style="display:flex;gap:8px;justify-content:center;">
-          <button class="chip" id="pomoStartBtn" type="button">開始</button>
-          <button class="chip" id="pomoResetBtn" type="button">リセット</button>
-        </div>
-        <div class="micro-note" style="text-align:center;margin-top:8px;">25分集中 → 5分休憩 → 25分集中でワンセット。完了すると自動で英語時間(0.83h)が加算されます。</div>
-      </div>
     </div>
 
     <div class="cat" id="cat-train">
@@ -503,6 +490,7 @@ function renderInputs(){
 
   document.querySelector('[data-field="englishH"] .v').textContent = state.englishH;
   document.querySelector('[data-field="englishM"] .v').textContent = state.englishM;
+  document.getElementById('englishTotalDisplay').textContent = `合計: ${state.englishH||0}時間${state.englishM||0}分`;
   document.querySelectorAll('[data-field="sleep"] .v').forEach(el=> el.textContent = state.sleep);
   document.querySelector('[data-field="med"] .v').textContent = state.med;
   document.querySelector('[data-field="screenH"] .v').textContent = state.screenH;
@@ -591,6 +579,12 @@ async function loadState(){
   updateDateLabel();
 }
 
+// 「分」を±すると自動で「時間」に繰り上がり/繰り下がりするペア
+const HM_PAIRS = {
+  englishM: {hourField:'englishH', maxHour:8},
+  screenM: {hourField:'screenH', maxHour:16}
+};
+
 function bindStepper(el){
   const field = el.dataset.field;
   const step = parseFloat(el.dataset.step);
@@ -599,10 +593,19 @@ function bindStepper(el){
   el.querySelectorAll('button').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       const dir = parseInt(btn.dataset.d);
-      let v = (state[field]||0) + dir*step;
-      v = Math.round(v*100)/100;
-      v = Math.max(min, Math.min(max, v));
-      state[field]=v;
+      const pair = HM_PAIRS[field];
+      if(pair){
+        let totalMinutes = (state[pair.hourField]||0)*60 + (state[field]||0);
+        totalMinutes += dir*step;
+        totalMinutes = Math.max(0, Math.min(pair.maxHour*60, totalMinutes));
+        state[pair.hourField] = Math.floor(totalMinutes/60);
+        state[field] = totalMinutes%60;
+      } else {
+        let v = (state[field]||0) + dir*step;
+        v = Math.round(v*100)/100;
+        v = Math.max(min, Math.min(max, v));
+        state[field]=v;
+      }
       renderInputs();
       renderScores();
       scheduleSave();
@@ -778,115 +781,6 @@ document.getElementById('prevDay').addEventListener('click', ()=>{
 document.getElementById('nextDay').addEventListener('click', ()=>{
   current.setDate(current.getDate()+1); loadState();
 });
-
-// --- ポモドーロ(25-5-25) ---
-const POMO_PHASES = [
-  {label:'集中 25分', seconds:25*60, isWork:true},
-  {label:'休憩 5分', seconds:5*60, isWork:false},
-  {label:'集中 25分', seconds:25*60, isWork:true}
-];
-let pomoPhaseIdx = 0;
-let pomoRemaining = POMO_PHASES[0].seconds;
-let pomoRunning = false;
-let pomoInterval = null;
-
-const pomoTimeEl = document.getElementById('pomoTime');
-const pomoPhaseLabelEl = document.getElementById('pomoPhaseLabel');
-const pomoStartBtn = document.getElementById('pomoStartBtn');
-const pomoResetBtn = document.getElementById('pomoResetBtn');
-
-function pomoFormat(sec){
-  const m = Math.floor(sec/60), s = sec%60;
-  return String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
-}
-function pomoRenderTime(){
-  pomoTimeEl.textContent = pomoFormat(pomoRemaining);
-  const phase = POMO_PHASES[pomoPhaseIdx];
-  pomoPhaseLabelEl.textContent = phase.label + (pomoRunning ? ' — 進行中' : (pomoRemaining===phase.seconds ? ' — スタート待ち' : ' — 一時停止中'));
-}
-let pomoAudioCtx = null;
-function pomoBeep(){
-  try{
-    if(!pomoAudioCtx){
-      pomoAudioCtx = new (window.AudioContext||window.webkitAudioContext)();
-    }
-    if(pomoAudioCtx.state === 'suspended'){
-      pomoAudioCtx.resume();
-    }
-    const playTone = (freq, startOffset)=>{
-      const osc = pomoAudioCtx.createOscillator();
-      const gain = pomoAudioCtx.createGain();
-      osc.frequency.value = freq;
-      osc.connect(gain); gain.connect(pomoAudioCtx.destination);
-      const t0 = pomoAudioCtx.currentTime + startOffset;
-      gain.gain.setValueAtTime(0.0001, t0);
-      gain.gain.exponentialRampToValueAtTime(0.2, t0+0.02);
-      gain.gain.exponentialRampToValueAtTime(0.0001, t0+0.5);
-      osc.start(t0);
-      osc.stop(t0+0.55);
-    };
-    playTone(880, 0);      // 1回目
-    playTone(1046, 0.35);  // 2回目(少し高い音で区切りをはっきりさせる)
-  }catch(e){ console.error('beep failed', e); }
-  if(navigator.vibrate) navigator.vibrate([200,80,200]);
-}
-function pomoTick(){
-  pomoRemaining--;
-  if(pomoRemaining<=0){
-    pomoBeep();
-    if(pomoPhaseIdx < POMO_PHASES.length-1){
-      pomoPhaseIdx++;
-      pomoRemaining = POMO_PHASES[pomoPhaseIdx].seconds;
-      pomoRenderTime();
-    } else {
-      // 1セット完了(25+5+25) → 実質学習50分を英語時間に加算
-      clearInterval(pomoInterval);
-      pomoRunning = false;
-      const addedMinutes = (state.englishH||0)*60 + (state.englishM||0) + 50;
-      state.englishH = Math.floor(addedMinutes/60);
-      state.englishM = addedMinutes%60;
-      renderInputs(); renderScores(); scheduleSave();
-      pomoPhaseIdx = 0;
-      pomoRemaining = POMO_PHASES[0].seconds;
-      pomoStartBtn.textContent = '開始';
-      pomoPhaseLabelEl.textContent = '1セット完了 🎉 お疲れ様';
-      pomoTimeEl.textContent = pomoFormat(pomoRemaining);
-      return;
-    }
-  } else {
-    pomoRenderTime();
-  }
-}
-pomoStartBtn.addEventListener('click', ()=>{
-  try{
-    if(!pomoAudioCtx){
-      pomoAudioCtx = new (window.AudioContext||window.webkitAudioContext)();
-    }
-    if(pomoAudioCtx.state === 'suspended'){
-      pomoAudioCtx.resume();
-    }
-  }catch(e){}
-  if(pomoRunning){
-    pomoRunning = false;
-    clearInterval(pomoInterval);
-    pomoStartBtn.textContent = '再開';
-    pomoRenderTime();
-  } else {
-    pomoRunning = true;
-    pomoStartBtn.textContent = '一時停止';
-    pomoInterval = setInterval(pomoTick, 1000);
-    pomoRenderTime();
-  }
-});
-pomoResetBtn.addEventListener('click', ()=>{
-  pomoRunning = false;
-  clearInterval(pomoInterval);
-  pomoPhaseIdx = 0;
-  pomoRemaining = POMO_PHASES[0].seconds;
-  pomoStartBtn.textContent = '開始';
-  pomoRenderTime();
-});
-pomoRenderTime();
 
 async function renderHeatmap(){
   const grid = document.getElementById('heatgrid');
