@@ -8,16 +8,16 @@
 <link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Zen+Kaku+Gothic+New:wght@400;500;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink: #4a4a49;
-    --paper: #f2f1ee;
-    --panel: #5a5a58;
-    --panel-2: #656462;
-    --line: #85837f;
-    --line-soft: #6f6d6a;
-    --seal: #b4483d;
-    --seal-dim: #7d332b;
-    --gold: #d4ad55;
-    --muted: #c4c2bd;
+    --ink: #454440;
+    --paper: #f0ece2;
+    --panel: #57554f;
+    --panel-2: #64615a;
+    --line: #8a867b;
+    --line-soft: #6c6960;
+    --seal: #3a6a8f;
+    --seal-dim: #1e3345;
+    --gold: #c3985c;
+    --muted: #bab5a8;
     --good: #7d9668;
     --bad: #a24d3f;
   }
@@ -83,7 +83,7 @@
     display:flex;flex-direction:column;align-items:center;justify-content:center;
     position:relative;
     background: radial-gradient(circle at 35% 30%, #656462 0%, #444341 70%);
-    box-shadow: 0 0 0 5px rgba(183,57,44,0.07), inset 0 0 30px rgba(183,57,44,0.08);
+    box-shadow: 0 0 0 5px rgba(58,106,143,0.09), inset 0 0 30px rgba(58,106,143,0.10);
     transition: box-shadow .4s ease, border-color .4s ease;
   }
   .seal .score{
@@ -97,7 +97,7 @@
     font-family:'JetBrains Mono', monospace;
     font-size:12px;color:var(--muted);margin-top:2px;letter-spacing:.1em;
   }
-  .seal.high{border-color:var(--gold); box-shadow:0 0 0 5px rgba(201,162,74,0.12), inset 0 0 30px rgba(201,162,74,0.15);}
+  .seal.high{border-color:var(--gold); box-shadow:0 0 0 5px rgba(195,152,92,0.12), inset 0 0 30px rgba(195,152,92,0.15);}
   .streak{
     margin-top:12px;font-family:'JetBrains Mono', monospace;font-size:12px;
     color:var(--gold); letter-spacing:.08em;
@@ -142,6 +142,7 @@
     padding:8px 14px;border-radius:20px;border:1px solid var(--line);
     font-size:12.5px;cursor:pointer;background:none;color:var(--muted);
     font-family:'Zen Kaku Gothic New', sans-serif;
+    white-space:nowrap;flex-shrink:0;
   }
   .chip.on{background:var(--seal);border-color:var(--seal);color:var(--paper);font-weight:700;}
 
@@ -152,7 +153,16 @@
   .quality-slider .qval{font-family:'JetBrains Mono', monospace;font-size:12px;min-width:34px;text-align:right;}
 
   .meal-field{display:flex;flex-direction:column;align-items:center;background:var(--panel-2);border-radius:6px;padding:6px 8px;min-width:60px;flex:1;}
-  .meal-field .mf-input{width:100%;text-align:center;background:none;border:none;color:var(--paper);font-family:'JetBrains Mono', monospace;font-size:14px;}
+  .meal-field .mf-input, .meal-field .hm-input{
+    width:100%;max-width:100%;text-align:center;
+    background:transparent !important;
+    -webkit-appearance:none; appearance:none;
+    border:none;outline:none;box-shadow:none;
+    color:var(--paper) !important;
+    font-family:'JetBrains Mono', monospace;font-size:14px;
+    box-sizing:border-box;
+  }
+  .meal-field .mf-input::placeholder, .meal-field .hm-input::placeholder{color:var(--muted);}
   .meal-field .mf-unit{font-size:9.5px;color:var(--muted);margin-top:2px;}
 
   /* heatmap */
@@ -325,10 +335,10 @@
   <div class="heat-title">直近35日</div>
   <div class="heatgrid" id="heatgrid"></div>
   <div class="legend">
-    <span>低</span><span class="sq" style="background:rgba(183,57,44,0.12)"></span>
-    <span class="sq" style="background:rgba(183,57,44,0.35)"></span>
-    <span class="sq" style="background:rgba(183,57,44,0.65)"></span>
-    <span class="sq" style="background:rgba(201,162,74,0.9)"></span><span>高</span>
+    <span>低</span><span class="sq" style="background:rgba(58,106,143,0.15)"></span>
+    <span class="sq" style="background:rgba(58,106,143,0.40)"></span>
+    <span class="sq" style="background:rgba(58,106,143,0.70)"></span>
+    <span class="sq" style="background:rgba(195,152,92,0.9)"></span><span>高</span>
   </div>
   <div class="micro-note" style="text-align:center;margin-top:10px;">継続日数は「総合70点以上 かつ 健康コア(食事+筋トレ+睡眠)35/50以上」の日でカウント。英語だけ頑張っても継続にはなりません。週1回だけ失敗しても継続は途切れない猶予付き。</div>
 
@@ -873,9 +883,9 @@ async function renderHeatmap(){
       const alpha = 0.1 + (Math.min(100,v)/100)*0.75;
       const isSuccess = v>=STREAK_THRESHOLD && rec.healthCore>=HEALTH_CORE_THRESHOLD;
       if(isSuccess){
-        cell.style.background = `rgba(201,162,74,${alpha})`;
+        cell.style.background = `rgba(195,152,92,${alpha})`;
       } else {
-        cell.style.background = `rgba(183,57,44,${alpha})`;
+        cell.style.background = `rgba(58,106,143,${alpha})`;
       }
       cell.title = `${d}: 総合${Math.round(v)}点 / 健康コア${Math.round(rec.healthCore)}`;
       cell.textContent = Math.round(v);
