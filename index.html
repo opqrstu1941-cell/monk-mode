@@ -254,12 +254,9 @@
       <div class="cat-head"><div class="cat-title">英語</div><div class="cat-score"><b id="s-english">0</b> / 35</div></div>
       <div class="bar"><div class="bar-fill" id="b-english" style="width:0%"></div></div>
       <div class="row2">
-        <div class="stepper" data-field="englishH" data-step="1" data-min="0" data-max="8">
-          <button data-d="-1">−</button><div class="val"><span class="v">0</span><span class="unit"> 時間</span></div><button data-d="1">+</button>
-        </div>
-        <div class="stepper" data-field="englishM" data-step="5" data-min="0" data-max="55">
-          <button data-d="-1">−</button><div class="val"><span class="v">0</span><span class="unit"> 分</span></div><button data-d="1">+</button>
-        </div>
+        <div class="meal-field"><input type="number" inputmode="decimal" class="hm-input" data-field="englishH" value="0"><span class="mf-unit">時間</span></div>
+        <div class="meal-field"><input type="number" inputmode="decimal" class="hm-input" data-field="englishM" value="0"><span class="mf-unit">分</span></div>
+        <button class="chip" id="englishAdd25Btn" type="button">＋25分</button>
       </div>
       <div style="margin-top:6px;font-family:'JetBrains Mono', monospace;font-size:13px;color:var(--gold);" id="englishTotalDisplay">合計: 0時間0分</div>
       <div class="micro-note">5時間で満点(35点)。1時間=7点換算。</div>
@@ -287,12 +284,9 @@
     <div class="cat" id="cat-sleep">
       <div class="cat-head"><div class="cat-title">睡眠</div><div class="cat-score"><b id="s-sleep">0</b> / 10</div></div>
       <div class="bar"><div class="bar-fill" id="b-sleep" style="width:0%"></div></div>
-      <div class="stepper" data-field="sleep" data-step="10" data-min="0" data-max="100">
-        <button data-d="-1">−</button><div class="val"><span class="v">0</span><span class="unit"> 睡眠スコア</span></div><button data-d="1">+</button>
-        <span id="sleepInline" style="font-family:'JetBrains Mono', monospace;font-size:12px;color:var(--gold);margin-left:4px;">→ 0点</span>
-      </div>
-      <div class="stepper" data-field="sleep" data-step="1" data-min="0" data-max="100" style="margin-top:6px;">
-        <button data-d="-1">−1</button><span style="font-size:10.5px;color:var(--muted);">1点単位の微調整</span><button data-d="1">+1</button>
+      <div class="row2">
+        <div class="meal-field"><input type="number" inputmode="decimal" class="hm-input" data-field="sleep" value="0"><span class="mf-unit">睡眠スコア</span></div>
+        <span id="sleepInline" style="font-family:'JetBrains Mono', monospace;font-size:12px;color:var(--gold);align-self:center;">→ 0点</span>
       </div>
       <div class="micro-note">睡眠スコア×0.1点。</div>
     </div>
@@ -319,12 +313,8 @@
       <div class="cat-head"><div class="cat-title">スクリーンタイム</div><div class="cat-score"><b id="s-screen">0</b> / 3</div></div>
       <div class="bar"><div class="bar-fill" id="b-screen" style="width:0%"></div></div>
       <div class="row2">
-        <div class="stepper" data-field="screenH" data-step="1" data-min="0" data-max="16">
-          <button data-d="-1">−</button><div class="val"><span class="v">0</span><span class="unit"> 時間</span></div><button data-d="1">+</button>
-        </div>
-        <div class="stepper" data-field="screenM" data-step="5" data-min="0" data-max="55">
-          <button data-d="-1">−</button><div class="val"><span class="v">0</span><span class="unit"> 分</span></div><button data-d="1">+</button>
-        </div>
+        <div class="meal-field"><input type="number" inputmode="decimal" class="hm-input" data-field="screenH" value="0"><span class="mf-unit">時間</span></div>
+        <div class="meal-field"><input type="number" inputmode="decimal" class="hm-input" data-field="screenM" value="0"><span class="mf-unit">分</span></div>
       </div>
       <div style="margin-top:6px;font-family:'JetBrains Mono', monospace;font-size:12px;color:var(--gold);" id="screenInline">→ +3点</div>
       <div class="micro-note">正味の使用時間を「時間」「分」で入力。合計が8時間以下で+3点。超過は−1点。</div>
@@ -488,13 +478,13 @@ function renderInputs(){
   document.getElementById('mealTotalF').textContent = Math.round(totals.f);
   document.getElementById('mealTotalC').textContent = Math.round(totals.c);
 
-  document.querySelector('[data-field="englishH"] .v').textContent = state.englishH;
-  document.querySelector('[data-field="englishM"] .v').textContent = state.englishM;
+  document.querySelector('.hm-input[data-field="englishH"]').value = state.englishH;
+  document.querySelector('.hm-input[data-field="englishM"]').value = state.englishM;
   document.getElementById('englishTotalDisplay').textContent = `合計: ${state.englishH||0}時間${state.englishM||0}分`;
-  document.querySelectorAll('[data-field="sleep"] .v').forEach(el=> el.textContent = state.sleep);
+  document.querySelector('.hm-input[data-field="sleep"]').value = state.sleep;
   document.querySelector('[data-field="med"] .v').textContent = state.med;
-  document.querySelector('[data-field="screenH"] .v').textContent = state.screenH;
-  document.querySelector('[data-field="screenM"] .v').textContent = state.screenM;
+  document.querySelector('.hm-input[data-field="screenH"]').value = state.screenH;
+  document.querySelector('.hm-input[data-field="screenM"]').value = state.screenM;
 
   document.querySelector('[data-toggle="cardio"]').classList.toggle('on', state.cardio);
   document.querySelector('[data-toggle="journal"]').classList.toggle('on', state.journal);
@@ -579,12 +569,6 @@ async function loadState(){
   updateDateLabel();
 }
 
-// 「分」を±すると自動で「時間」に繰り上がり/繰り下がりするペア
-const HM_PAIRS = {
-  englishM: {hourField:'englishH', maxHour:8},
-  screenM: {hourField:'screenH', maxHour:16}
-};
-
 function bindStepper(el){
   const field = el.dataset.field;
   const step = parseFloat(el.dataset.step);
@@ -593,19 +577,10 @@ function bindStepper(el){
   el.querySelectorAll('button').forEach(btn=>{
     btn.addEventListener('click', ()=>{
       const dir = parseInt(btn.dataset.d);
-      const pair = HM_PAIRS[field];
-      if(pair){
-        let totalMinutes = (state[pair.hourField]||0)*60 + (state[field]||0);
-        totalMinutes += dir*step;
-        totalMinutes = Math.max(0, Math.min(pair.maxHour*60, totalMinutes));
-        state[pair.hourField] = Math.floor(totalMinutes/60);
-        state[field] = totalMinutes%60;
-      } else {
-        let v = (state[field]||0) + dir*step;
-        v = Math.round(v*100)/100;
-        v = Math.max(min, Math.min(max, v));
-        state[field]=v;
-      }
+      let v = (state[field]||0) + dir*step;
+      v = Math.round(v*100)/100;
+      v = Math.max(min, Math.min(max, v));
+      state[field]=v;
       renderInputs();
       renderScores();
       scheduleSave();
@@ -613,6 +588,60 @@ function bindStepper(el){
   });
 }
 document.querySelectorAll('.stepper[data-field]').forEach(bindStepper);
+
+// --- 英語・スクリーンタイム: 食事と同じ「直接タップして打ち込む」方式 ---
+const HM_PAIRS = {
+  englishM: {hourField:'englishH', maxHour:16},
+  screenM: {hourField:'screenH', maxHour:16}
+};
+
+function normalizeHM(field){
+  const pair = HM_PAIRS[field];
+  if(!pair) return;
+  let totalMinutes = (state[pair.hourField]||0)*60 + (state[field]||0);
+  if(totalMinutes<0) totalMinutes = 0;
+  totalMinutes = Math.min(pair.maxHour*60, totalMinutes);
+  state[pair.hourField] = Math.floor(totalMinutes/60);
+  state[field] = totalMinutes%60;
+}
+
+const HM_MAX = {sleep:100, englishH:16, screenH:16};
+
+document.querySelectorAll('.hm-input').forEach(inputEl=>{
+  const field = inputEl.dataset.field;
+  inputEl.addEventListener('input', ()=>{
+    let v = parseFloat(inputEl.value);
+    if(isNaN(v) || v<0) v = 0;
+    state[field] = v;
+    // 入力中はカーソル維持のため、合計表示だけ軽量更新(繰り上がり計算はまだしない)
+    document.getElementById('englishTotalDisplay').textContent = `合計: ${state.englishH||0}時間${state.englishM||0}分`;
+    renderScores();
+    scheduleSave();
+  });
+  inputEl.addEventListener('blur', ()=>{
+    let v = parseFloat(inputEl.value);
+    if(isNaN(v) || v<0) v = 0;
+    state[field] = v;
+    if(HM_PAIRS[field]){
+      normalizeHM(field); // 60分以上打ち込まれたら時間側へ繰り上げ
+    } else if(HM_MAX[field]!==undefined){
+      state[field] = Math.min(HM_MAX[field], state[field]);
+    }
+    renderInputs();
+    renderScores();
+    scheduleSave();
+  });
+  inputEl.addEventListener('focus', ()=> inputEl.select());
+});
+
+document.getElementById('englishAdd25Btn').addEventListener('click', ()=>{
+  const total = (state.englishH||0)*60 + (state.englishM||0) + 25;
+  state.englishH = Math.min(16, Math.floor(total/60));
+  state.englishM = state.englishH>=16 ? 59 : total%60;
+  renderInputs();
+  renderScores();
+  scheduleSave();
+});
 
 function updateMealTotalsDisplay(){
   const totals = mealTotals(state);
